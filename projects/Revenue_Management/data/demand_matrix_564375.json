@@ -1,0 +1,3091 @@
+{
+  "values": [
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -20,
+      "demand": 4.235
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -20,
+      "demand": 4.235
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -20,
+      "demand": 4.1272
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -20,
+      "demand": 4.0040000000000004
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -20,
+      "demand": 3.4362
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -20,
+      "demand": 3.0702
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -20,
+      "demand": 2.9154
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -20,
+      "demand": 2.5772999999999997
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -20,
+      "demand": 2.2176
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -20,
+      "demand": 1.8382
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -20,
+      "demand": 1.65
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -20,
+      "demand": 1.48
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -20,
+      "demand": 1.29
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -20,
+      "demand": 1.07
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -20,
+      "demand": 0.86
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -20,
+      "demand": 0.63
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -20,
+      "demand": 0.4
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -20,
+      "demand": 0.12
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -20,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -20,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -20,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -19,
+      "demand": 4.5296
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -19,
+      "demand": 4.5296
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -19,
+      "demand": 4.4384
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -19,
+      "demand": 4.3472
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -19,
+      "demand": 3.7672000000000003
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -19,
+      "demand": 3.4176
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -19,
+      "demand": 3.3024
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -19,
+      "demand": 2.9887
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -19,
+      "demand": 2.6085000000000003
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -19,
+      "demand": 2.2321
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -19,
+      "demand": 2.07
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -19,
+      "demand": 1.93
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -19,
+      "demand": 1.77
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -19,
+      "demand": 1.59
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -19,
+      "demand": 1.42
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -19,
+      "demand": 1.23
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -19,
+      "demand": 1.04
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -19,
+      "demand": 0.81
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -19,
+      "demand": 0.57
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -19,
+      "demand": 0.31
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -19,
+      "demand": 0.07
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -18,
+      "demand": 4.47
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -18,
+      "demand": 4.47
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -18,
+      "demand": 4.4104
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -18,
+      "demand": 4.321
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -18,
+      "demand": 3.7788
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -18,
+      "demand": 3.465
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -18,
+      "demand": 3.3516000000000004
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -18,
+      "demand": 3.0582999999999996
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -18,
+      "demand": 2.7417000000000002
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -18,
+      "demand": 2.3836
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -18,
+      "demand": 2.24
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -18,
+      "demand": 2.11
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -18,
+      "demand": 1.98
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -18,
+      "demand": 1.83
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -18,
+      "demand": 1.68
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -18,
+      "demand": 1.52
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -18,
+      "demand": 1.36
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -18,
+      "demand": 1.17
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -18,
+      "demand": 0.96
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -18,
+      "demand": 0.75
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -18,
+      "demand": 0.54
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -17,
+      "demand": 3.796
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -17,
+      "demand": 3.796
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -17,
+      "demand": 3.7376
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -17,
+      "demand": 3.6645999999999996
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -17,
+      "demand": 3.2340000000000004
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -17,
+      "demand": 2.9875000000000003
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -17,
+      "demand": 2.9
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -17,
+      "demand": 2.655
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -17,
+      "demand": 2.387
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -17,
+      "demand": 2.1008
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -17,
+      "demand": 1.98
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -17,
+      "demand": 1.88
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -17,
+      "demand": 1.77
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -17,
+      "demand": 1.65
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -17,
+      "demand": 1.53
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -17,
+      "demand": 1.4
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -17,
+      "demand": 1.27
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -17,
+      "demand": 1.12
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -17,
+      "demand": 0.95
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -17,
+      "demand": 0.78
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -17,
+      "demand": 0.61
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -16,
+      "demand": 4.104
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -16,
+      "demand": 4.104
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -16,
+      "demand": 4.0032
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -16,
+      "demand": 3.8735999999999997
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -16,
+      "demand": 3.354
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -16,
+      "demand": 3.0381
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -16,
+      "demand": 2.8781999999999996
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -16,
+      "demand": 2.5856999999999997
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -16,
+      "demand": 2.2345
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -16,
+      "demand": 1.9088999999999998
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -16,
+      "demand": 1.71
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -16,
+      "demand": 1.52
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -16,
+      "demand": 1.33
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -16,
+      "demand": 1.1
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -16,
+      "demand": 0.88
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -16,
+      "demand": 0.64
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -16,
+      "demand": 0.41
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -16,
+      "demand": 0.12
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -16,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -16,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -16,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -15,
+      "demand": 3.1161
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -15,
+      "demand": 3.1161
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -15,
+      "demand": 3.0033
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -15,
+      "demand": 2.8764
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -15,
+      "demand": 2.4576
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -15,
+      "demand": 2.1838
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -15,
+      "demand": 2.0252
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -15,
+      "demand": 1.7515999999999998
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -15,
+      "demand": 1.4606000000000001
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -15,
+      "demand": 1.1615
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -15,
+      "demand": 0.96
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -15,
+      "demand": 0.75
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -15,
+      "demand": 0.54
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -15,
+      "demand": 0.29
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -15,
+      "demand": 0.05
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -15,
+      "demand": 0.0
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -15,
+      "demand": 0.0
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -15,
+      "demand": 0.0
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -15,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -15,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -15,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -14,
+      "demand": 3.2015999999999996
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -14,
+      "demand": 3.2015999999999996
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -14,
+      "demand": 3.1049999999999995
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -14,
+      "demand": 2.9945999999999997
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -14,
+      "demand": 2.5956
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -14,
+      "demand": 2.34
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -14,
+      "demand": 2.196
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -14,
+      "demand": 1.9549999999999998
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -14,
+      "demand": 1.6740000000000002
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -14,
+      "demand": 1.39
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -14,
+      "demand": 1.22
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -14,
+      "demand": 1.04
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -14,
+      "demand": 0.85
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -14,
+      "demand": 0.63
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -14,
+      "demand": 0.42
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -14,
+      "demand": 0.18
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -14,
+      "demand": 0.0
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -14,
+      "demand": 0.0
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -14,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -14,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -14,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -13,
+      "demand": 4.563
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -13,
+      "demand": 4.563
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -13,
+      "demand": 4.4415000000000004
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -13,
+      "demand": 4.32
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -13,
+      "demand": 3.8375
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -13,
+      "demand": 3.4985999999999997
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -13,
+      "demand": 3.332
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -13,
+      "demand": 3.0096
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -13,
+      "demand": 2.6676
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -13,
+      "demand": 2.28
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -13,
+      "demand": 2.07
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -13,
+      "demand": 1.86
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -13,
+      "demand": 1.64
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -13,
+      "demand": 1.38
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -13,
+      "demand": 1.13
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -13,
+      "demand": 0.86
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -13,
+      "demand": 0.58
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -13,
+      "demand": 0.25
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -13,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -13,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -13,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -12,
+      "demand": 4.6018
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -12,
+      "demand": 4.6018
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -12,
+      "demand": 4.4821
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -12,
+      "demand": 4.3491
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -12,
+      "demand": 3.8499
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -12,
+      "demand": 3.4983
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -12,
+      "demand": 3.3227999999999995
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -12,
+      "demand": 3.0284
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -12,
+      "demand": 2.6643000000000003
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -12,
+      "demand": 2.29
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -12,
+      "demand": 2.07
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -12,
+      "demand": 1.84
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -12,
+      "demand": 1.6
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -12,
+      "demand": 1.33
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -12,
+      "demand": 1.06
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -12,
+      "demand": 0.77
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -12,
+      "demand": 0.48
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -12,
+      "demand": 0.13
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -12,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -12,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -12,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -11,
+      "demand": 4.875
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -11,
+      "demand": 4.875
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -11,
+      "demand": 4.771
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -11,
+      "demand": 4.654
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -11,
+      "demand": 4.186599999999999
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -11,
+      "demand": 3.8743999999999996
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -11,
+      "demand": 3.7236
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -11,
+      "demand": 3.4384
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -11,
+      "demand": 3.074
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -11,
+      "demand": 2.73
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -11,
+      "demand": 2.54
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -11,
+      "demand": 2.34
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -11,
+      "demand": 2.13
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -11,
+      "demand": 1.89
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -11,
+      "demand": 1.66
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -11,
+      "demand": 1.41
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -11,
+      "demand": 1.16
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -11,
+      "demand": 0.85
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -11,
+      "demand": 0.53
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -11,
+      "demand": 0.19
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -11,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -10,
+      "demand": 4.3434
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -10,
+      "demand": 4.3434
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -10,
+      "demand": 4.2291
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -10,
+      "demand": 4.114800000000001
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -10,
+      "demand": 3.689
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -10,
+      "demand": 3.3858
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -10,
+      "demand": 3.2262
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -10,
+      "demand": 2.9370000000000003
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -10,
+      "demand": 2.6394
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -10,
+      "demand": 2.3
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -10,
+      "demand": 2.09
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -10,
+      "demand": 1.88
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -10,
+      "demand": 1.65
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -10,
+      "demand": 1.39
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -10,
+      "demand": 1.13
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -10,
+      "demand": 0.86
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -10,
+      "demand": 0.58
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -10,
+      "demand": 0.25
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -10,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -10,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -10,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -9,
+      "demand": 4.0052
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -9,
+      "demand": 4.0052
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -9,
+      "demand": 3.9059999999999997
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -9,
+      "demand": 3.8068
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -9,
+      "demand": 3.4515
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -9,
+      "demand": 3.2091999999999996
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -9,
+      "demand": 3.0622999999999996
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -9,
+      "demand": 2.827
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -9,
+      "demand": 2.5305000000000004
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -9,
+      "demand": 2.24
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -9,
+      "demand": 2.06
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -9,
+      "demand": 1.87
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -9,
+      "demand": 1.67
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -9,
+      "demand": 1.44
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -9,
+      "demand": 1.21
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -9,
+      "demand": 0.97
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -9,
+      "demand": 0.73
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -9,
+      "demand": 0.43
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -9,
+      "demand": 0.12
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -9,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -9,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -8,
+      "demand": 3.6844
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -8,
+      "demand": 3.6844
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -8,
+      "demand": 3.599
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -8,
+      "demand": 3.5014
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -8,
+      "demand": 3.1739999999999995
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -8,
+      "demand": 2.968
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -8,
+      "demand": 2.8336
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -8,
+      "demand": 2.616
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -8,
+      "demand": 2.3625000000000003
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -8,
+      "demand": 2.09
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -8,
+      "demand": 1.93
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -8,
+      "demand": 1.75
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -8,
+      "demand": 1.56
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -8,
+      "demand": 1.34
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -8,
+      "demand": 1.13
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -8,
+      "demand": 0.91
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -8,
+      "demand": 0.68
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -8,
+      "demand": 0.4
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -8,
+      "demand": 0.11
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -8,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -8,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -7,
+      "demand": 4.0222
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -7,
+      "demand": 4.0222
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -7,
+      "demand": 3.9269999999999996
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -7,
+      "demand": 3.808
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -7,
+      "demand": 3.4690999999999996
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -7,
+      "demand": 3.234
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -7,
+      "demand": 3.0690000000000004
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -7,
+      "demand": 2.8248
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -7,
+      "demand": 2.5584000000000002
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -7,
+      "demand": 2.27
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -7,
+      "demand": 2.07
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -7,
+      "demand": 1.85
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -7,
+      "demand": 1.62
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -7,
+      "demand": 1.36
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -7,
+      "demand": 1.11
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -7,
+      "demand": 0.84
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -7,
+      "demand": 0.56
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -7,
+      "demand": 0.23
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -7,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -7,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -7,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -6,
+      "demand": 5.428799999999999
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -6,
+      "demand": 5.428799999999999
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -6,
+      "demand": 5.3476
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -6,
+      "demand": 5.2548
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -6,
+      "demand": 4.9173
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -6,
+      "demand": 4.708800000000001
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -6,
+      "demand": 4.578
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -6,
+      "demand": 4.354900000000001
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -6,
+      "demand": 4.0872
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -6,
+      "demand": 3.77
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -6,
+      "demand": 3.6
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -6,
+      "demand": 3.43
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -6,
+      "demand": 3.24
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -6,
+      "demand": 3.02
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -6,
+      "demand": 2.82
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -6,
+      "demand": 2.59
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -6,
+      "demand": 2.37
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -6,
+      "demand": 2.09
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -6,
+      "demand": 1.81
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -6,
+      "demand": 1.5
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -6,
+      "demand": 1.21
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -5,
+      "demand": 5.323799999999999
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -5,
+      "demand": 5.323799999999999
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -5,
+      "demand": 5.2097999999999995
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -5,
+      "demand": 5.0844
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -5,
+      "demand": 4.687
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -5,
+      "demand": 4.4298
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -5,
+      "demand": 4.2479000000000005
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -5,
+      "demand": 3.969
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -5,
+      "demand": 3.6771
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -5,
+      "demand": 3.34
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -5,
+      "demand": 3.1
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -5,
+      "demand": 2.84
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -5,
+      "demand": 2.57
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -5,
+      "demand": 2.26
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -5,
+      "demand": 1.96
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -5,
+      "demand": 1.63
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -5,
+      "demand": 1.3
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -5,
+      "demand": 0.9
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -5,
+      "demand": 0.48
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -5,
+      "demand": 0.04
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -5,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -4,
+      "demand": 4.983900000000001
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -4,
+      "demand": 4.983900000000001
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -4,
+      "demand": 4.9173
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -4,
+      "demand": 4.839600000000001
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -4,
+      "demand": 4.6008000000000004
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -4,
+      "demand": 4.4096
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -4,
+      "demand": 4.303599999999999
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -4,
+      "demand": 4.0976
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -4,
+      "demand": 3.8862
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -4,
+      "demand": 3.67
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -4,
+      "demand": 3.52
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -4,
+      "demand": 3.36
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -4,
+      "demand": 3.2
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -4,
+      "demand": 3.0
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -4,
+      "demand": 2.82
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -4,
+      "demand": 2.61
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -4,
+      "demand": 2.41
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -4,
+      "demand": 2.17
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -4,
+      "demand": 1.91
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -4,
+      "demand": 1.64
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -4,
+      "demand": 1.37
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -3,
+      "demand": 4.482000000000001
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -3,
+      "demand": 4.482000000000001
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -3,
+      "demand": 4.4064000000000005
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -3,
+      "demand": 4.32
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -3,
+      "demand": 4.1234
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -3,
+      "demand": 3.9208000000000003
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -3,
+      "demand": 3.796
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -3,
+      "demand": 3.6256
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -3,
+      "demand": 3.4272
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -3,
+      "demand": 3.2
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -3,
+      "demand": 3.02
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -3,
+      "demand": 2.84
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -3,
+      "demand": 2.64
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -3,
+      "demand": 2.42
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -3,
+      "demand": 2.2
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -3,
+      "demand": 1.97
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -3,
+      "demand": 1.73
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -3,
+      "demand": 1.44
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -3,
+      "demand": 1.15
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -3,
+      "demand": 0.83
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -3,
+      "demand": 0.52
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -2,
+      "demand": 5.0504999999999995
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -2,
+      "demand": 5.0504999999999995
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -2,
+      "demand": 4.9350000000000005
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -2,
+      "demand": 4.798500000000001
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -2,
+      "demand": 4.5656
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -2,
+      "demand": 4.3363000000000005
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -2,
+      "demand": 4.1406
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -2,
+      "demand": 3.8862
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -2,
+      "demand": 3.6056999999999997
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -2,
+      "demand": 3.31
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -2,
+      "demand": 3.03
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -2,
+      "demand": 2.74
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -2,
+      "demand": 2.44
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -2,
+      "demand": 2.08
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -2,
+      "demand": 1.74
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -2,
+      "demand": 1.37
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -2,
+      "demand": 1.0
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -2,
+      "demand": 0.55
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -2,
+      "demand": 0.08
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -2,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -2,
+      "demand": 0.0
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": -1,
+      "demand": 6.952500000000001
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": -1,
+      "demand": 6.952500000000001
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": -1,
+      "demand": 6.849500000000001
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": -1,
+      "demand": 6.7362
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": -1,
+      "demand": 6.5076
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": -1,
+      "demand": 6.2822
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": -1,
+      "demand": 6.1206
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": -1,
+      "demand": 5.9287
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": -1,
+      "demand": 5.66
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": -1,
+      "demand": 5.43
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": -1,
+      "demand": 5.19
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": -1,
+      "demand": 4.94
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": -1,
+      "demand": 4.67
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": -1,
+      "demand": 4.36
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": -1,
+      "demand": 4.06
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": -1,
+      "demand": 3.74
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": -1,
+      "demand": 3.41
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": -1,
+      "demand": 3.02
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": -1,
+      "demand": 2.61
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": -1,
+      "demand": 2.17
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": -1,
+      "demand": 1.75
+    },
+    {
+      "csName": "P",
+      "csOrder": 1,
+      "price": 38.0,
+      "dayX": 0,
+      "demand": 1.02
+    },
+    {
+      "csName": "A",
+      "csOrder": 2,
+      "price": 38.0,
+      "dayX": 0,
+      "demand": 1.02
+    },
+    {
+      "csName": "N",
+      "csOrder": 3,
+      "price": 45.0,
+      "dayX": 0,
+      "demand": 0.98
+    },
+    {
+      "csName": "G",
+      "csOrder": 4,
+      "price": 52.0,
+      "dayX": 0,
+      "demand": 0.94
+    },
+    {
+      "csName": "T",
+      "csOrder": 5,
+      "price": 62.0,
+      "dayX": 0,
+      "demand": 0.88
+    },
+    {
+      "csName": "R",
+      "csOrder": 6,
+      "price": 72.0,
+      "dayX": 0,
+      "demand": 0.82
+    },
+    {
+      "csName": "X",
+      "csOrder": 7,
+      "price": 84.0,
+      "dayX": 0,
+      "demand": 0.76
+    },
+    {
+      "csName": "L",
+      "csOrder": 8,
+      "price": 95.0,
+      "dayX": 0,
+      "demand": 0.69
+    },
+    {
+      "csName": "K",
+      "csOrder": 9,
+      "price": 109.0,
+      "dayX": 0,
+      "demand": 0.61
+    },
+    {
+      "csName": "V",
+      "csOrder": 10,
+      "price": 125.0,
+      "dayX": 0,
+      "demand": 0.52
+    },
+    {
+      "csName": "Q",
+      "csOrder": 11,
+      "price": 142.0,
+      "dayX": 0,
+      "demand": 0.43
+    },
+    {
+      "csName": "H",
+      "csOrder": 12,
+      "price": 159.0,
+      "dayX": 0,
+      "demand": 0.34
+    },
+    {
+      "csName": "M",
+      "csOrder": 13,
+      "price": 178.0,
+      "dayX": 0,
+      "demand": 0.23
+    },
+    {
+      "csName": "I",
+      "csOrder": 14,
+      "price": 198.0,
+      "dayX": 0,
+      "demand": 0.12
+    },
+    {
+      "csName": "F",
+      "csOrder": 15,
+      "price": 221.0,
+      "dayX": 0,
+      "demand": 0.0
+    },
+    {
+      "csName": "B",
+      "csOrder": 16,
+      "price": 243.0,
+      "dayX": 0,
+      "demand": 0.0
+    },
+    {
+      "csName": "D",
+      "csOrder": 17,
+      "price": 267.0,
+      "dayX": 0,
+      "demand": 0.0
+    },
+    {
+      "csName": "S",
+      "csOrder": 18,
+      "price": 291.0,
+      "dayX": 0,
+      "demand": 0.0
+    },
+    {
+      "csName": "J",
+      "csOrder": 19,
+      "price": 320.0,
+      "dayX": 0,
+      "demand": 0.0
+    },
+    {
+      "csName": "Z",
+      "csOrder": 20,
+      "price": 351.0,
+      "dayX": 0,
+      "demand": 0.0
+    },
+    {
+      "csName": "Y",
+      "csOrder": 21,
+      "price": 382.0,
+      "dayX": 0,
+      "demand": 0.0
+    }
+  ]
+}

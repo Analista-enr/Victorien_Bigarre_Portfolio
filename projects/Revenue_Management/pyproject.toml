@@ -1,0 +1,112 @@
+[project]
+name = "optimization-technical-test-rl"
+description="Technical test for optimization engineer (RL)"
+dynamic = ["version"]
+readme = "README.md"
+authors = [
+    { name = "wiremind data science team", email = "data-science@wiremind.io" }
+]
+license = {text = "Proprietary"}
+requires-python = ">=3.13"
+dependencies = [
+    # "boto3~=1.35.0", # pin because of https://github.com/boto/boto3/issues/4392
+    # "pandas[pyarrow, aws]~=2.2.3",
+    # "scikit-learn~=1.5.0",
+    # "tqdm~=4.67.1",
+    "gymnasium~=1.2.0",
+    "pydantic~=2.0",
+    "pygame >=2.1.3",
+    "typer~=0.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyright>=1.1",
+    "ruff>=0.11",
+]
+
+[project.urls]
+Repository = "https://gitlab.wiremind.io/wiremind/data-science/optimization-technical-test-rl"
+
+[build-system]
+requires = ["setuptools>=69.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = true
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]
+
+[tool.setuptools.package-data]
+optimization_technical_test_rl = ["py.typed"]
+
+
+[tool.pyright]
+pythonVersion = "3.13"
+stubPath = "./typings"
+extraPaths = ["optimization_technical_test_rl/"]
+include = ["optimization_technical_test_rl"]
+useLibraryCodeForTypes = true
+
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+exclude = [
+    ".bzr",
+    ".git",
+    ".svn",
+    ".hg",
+    "typings"
+]
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "A", # flake8-builtins
+    "B", # flake8-bugbear
+    "ASYNC", # flake8-async
+    "C4", # flake8-comprehensions
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
+    "NPY", # NumPy-specific rules
+    "PD", # pandas-vet
+    "PT", # flake8-pytest-style
+    "Q", # flake8-quotes-q
+    "RET", # flake8-return
+    "RUF", # ruff specific rules
+    "S",  # flake8-bandit-s
+    "TID", # tidy-imports
+    "UP", # pyupgrade
+    "W",  # pycodestyle
+]
+
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+parametrize-names-type = "csv"
+parametrize-values-row-type = "tuple"
+parametrize-values-type = "tuple"
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+split-on-trailing-comma = false
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = [
+    "F401"
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
