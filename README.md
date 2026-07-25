@@ -1,54 +1,67 @@
-🌍 Victorien Bigarré
+Voici une version corrigée, concise et professionnelle de ton profil, adaptée pour une **Scale-Up** ou un environnement international. J’ai corrigé les fautes de grammaire, de formulation et d’orthographe, tout en gardant un style clair et percutant.
 
-Optimization & Data Scientist 
+---
 
+---
 
-🚀 About me
+**🌍 Victorien Bigarré**
 
-As a becoming engineer, I would like to be at the intersecton of Operational Research and Machine learning. After a global cursus in Centrale Lille where I learnt basics of maths, physics and chemistry, I landed off to Universidad de Chile to specialize in applied mathematics. Back in France I spent my gap year applying my mathematical knowledge to the enrgy sectors designing energy transition trajectories for Global South then developping ML and OR algorthms for grid management. 
+**Optimization & Data Scientist**
 
-Now, I am happy to join Centrale Mediterranée for a Master Degree in Data Science & Economics while working on OR project to  to deepen my knowlegde in this fields. In the future, I would like to tackle the challenges of tomorrow joining a consulting or hight tech company speciclised in Energy, Biotechnology or Economics.
+---
 
+### **🚀 About Me**
+As an aspiring engineer, I aim to work at the **intersection of Operational Research and Machine Learning**. After a broad curriculum at **Centrale Lille**, where I studied mathematics, physics, and chemistry, I pursued a specialization in **applied mathematics at Universidad de Chile**.
 
-📍 Based in Provence, open to international
-📧 victorien.bigarre@centrale.centralelille.fr
-🔗 LinkedIn 
+Back in France, I spent my gap year applying my mathematical expertise to the **energy sector**, designing **energy transition trajectories for the Global South** and developing **ML and OR algorithms for grid management**.
 
-**Portfolio Structure :**
-- 
+I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale Méditerranée**, while working on **OR projects to deepen my expertise in these fields**. In the future, I aim to tackle tomorrow’s challenges by joining a **consulting firm or a high-tech company specializing in Energy, Biotechnology, or Economics**.
 
-This portfolio cntains projects I set up folowing my academics pathway. They all aim to answer real-world problems with a varitety of technics both from ML world and OR worlds.
+📍 **Based in Provence** | Open to international opportunities
+📧 [victorien.bigarre@centralelille.fr](mailto:victorien.bigarre@centralelille.fr)
+🔗 [LinkedIn](lien)
 
-- PROJECT 1 : Customs scheduling
-  
-  The arrivals of planes in an airport can vary a lot during a day. An adapted scheduling has to fulfill both a minimization of operational costs of customs and a limited waiting time in the queue for passsengers. This project consists of an optimization of the total number of customs subject to a given planning of arrivals and a given average time limit. Moreover, depending on the marginal cost of customers and waiting time, the algorithme provides a pareto optimal.
-  
-- PROJECT 2 :
-    For every transport hub, the management of arrivals is a challeng of every day. As one of the most important train station, the Marseille St-Charles Station moreveover has to compensate every little lateness or earlyness that affects the assignations. It is so important to reassign in a little time the trains without changing the yet annouced ones. This combination problem is pretty huge as the number of train and the size of the hub grow up. This projects consists in finding in less than 3 minutes a feasible solution with a minimum overlap between trains. Based on a real datas and real constraints of SNCF, this project contains a comparison with the hexaly solver that serves of benchmark.
+---
 
-  
-**Resumé**
-- 
-💡 Technical skills
+---
 
-Machine Learning : 
-- Mathematic tools : wavelet transform, denoising methods, statistics
-- Concepts : Time series forecasting, classification algorithms, renforcement learning
-- Algorithms : LGBM, XGB, Elasticnet, SVR, SVM, DBSCAN, PPO
+### **📂 Portfolio Structure**
+This portfolio includes projects I developed throughout my academic journey. Each project addresses **real-world problems** using a variety of **ML and OR techniques**.
 
-Optimisation :
-- Mathematic tools : linear algebra, analisis,
-- Concepts : Metaheuristique, Linear Programming, Mixte-Integer Linear Programming, Graph optimization
-- Algorithms : Simplexe, Interior Points, PSO, SA, L-BFGS, COBYLA, Golden Search, Gradient Descent
+- **PROJECT 1: Customs Scheduling**
+  Airport arrivals fluctuate significantly throughout the day. An effective customs scheduling system must **minimize operational costs** while ensuring **passenger waiting times remain within acceptable limits**. This project optimizes the **total number of customs agents** subject to a given flight schedule and average waiting time constraint. Additionally, based on the marginal cost of customers and waiting time, the algorithm provides a **Pareto-optimal solution**.
 
-Programming skills :
-- ML : Python (Pandas, Numpy,Scikit-learn, Streamlit) SQL, Excel,R
-- Optimisation : Python (SciPy, PuLP,IBM, Hexaly)
+- **PROJECT 2: Train Reassignment at Marseille St-Charles Station**
+  Managing arrivals at transport hubs is a daily challenge. As one of France’s busiest train stations, **Marseille St-Charles** must quickly reassign trains to compensate for delays or early arrivals without altering previously announced schedules. Given the large number of trains and the size of the hub, this combinatorial problem requires finding a **feasible solution in under 3 minutes** with minimal overlap. Based on **real SNCF data and constraints**, this project includes a **comparison with Hexaly’s solver**, which serves as a benchmark.
 
-💡 Global knowledge
-- Sectors of interests : Energytech, Biotechnology, Economics, Ethics
-- Languages : French Native, English : fluent (TOEIC : 960), Spanish : fluent, Mandarin : Beginner
-- Sports : Climbing, Salsa, Surf
+---
 
+---
 
-" _We have a world to build_" 🌱
+### **💡 Technical Skills**
+
+**Machine Learning:**
+- **Mathematical Tools:** Wavelet transform, denoising methods, statistics
+- **Concepts:** Time series forecasting, classification algorithms, reinforcement learning
+- **Algorithms:** LGBM, XGBoost, ElasticNet, SVR, SVM, DBSCAN, PPO
+
+**Optimization:**
+- **Mathematical Tools:** Linear algebra, analysis
+- **Concepts:** Metaheuristics, Linear Programming, Mixed-Integer Linear Programming, Graph Optimization
+- **Algorithms:** Simplex, Interior Points, PSO, SA, L-BFGS, COBYLA, Golden Search, Gradient Descent
+
+**Programming Skills:**
+- **ML:** Python (Pandas, NumPy, Scikit-learn, Streamlit), SQL, Excel, R
+- **Optimization:** Python (SciPy, PuLP, IBM ILOG, Hexaly)
+
+---
+
+---
+
+### **💡 Global Knowledge**
+- **Sectors of Interest:** EnergyTech, Biotechnology, Economics, Ethics
+- **Languages:** French (Native), English (Fluent, TOEIC: 960), Spanish (Fluent), Mandarin (Beginner)
+- **Sports:** Climbing, Salsa, Surf
+
+---
+*"We have a world to build."* 🌱
