@@ -1,9 +1,4 @@
-Voici une version corrigée, concise et professionnelle de ton profil, adaptée pour une **Scale-Up** ou un environnement international. J’ai corrigé les fautes de grammaire, de formulation et d’orthographe, tout en gardant un style clair et percutant.
-
 ---
-
----
-
 **🌍 Victorien Bigarré**
 
 **Optimization & Data Scientist**
