@@ -17,7 +17,7 @@ Now, I am happy to join Centrale Mediterranée for a Master Degree in Data Scien
 **Portfolio Structure :**
 - 
 
-
+**Resumé**
 💡 Technical skills
 
 Machine Learning : 
