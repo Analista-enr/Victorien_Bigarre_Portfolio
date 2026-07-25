@@ -1,4 +1,3 @@
----
 **🌍 Victorien Bigarré**
 
 **Optimization & Data Scientist**
