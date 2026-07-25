@@ -13,55 +13,28 @@ Passionné par la science des données, l’optimisation et les systèmes énerg
 
 
 
-💡 Compétences Clés
+💡 Technical skills
 
-Data Science & IA
+Machine Learning : 
+- Mathematic tools : wavelet transform, denoising methods, statistics
+- Concepts : Time series forecasting, classification algorithms, renforcement learning
+- Algorithms : LGBM, XGB, Elasticnet, SVR, SVM, DBSCAN, PPO
 
+Optimisation :
+- Mathematic tools : linear algebra, analisis,
+- Concepts : Metaheuristique, Linear Programming, Mixte-Integer Linear Programming, Graph optimization
+- Algorithms : Simplexe, Interior Points, PSO, SA, L-BFGS, COBYLA, Golden Search, Gradient Descent
 
+Programming skills :
+- ML : Python (Pandas, Numpy,Scikit-learn, Streamlit) SQL, Excel,R
+- Optimisation : Python (SciPy, PuLP,IBM, Hexaly)
 
-
-
-Machine Learning : Séries temporelles (LSTM, régression hybride), classification (KNN, DBSCAN), renforcement learning
-
-
-
-Optimisation : Métaheuristiques (PSO, SA), recherche opérationnelle, modélisation mathématique
-
-
-
-Analyse de données : Statistiques, économétrie, analyse prédictive
-
-Outils & Technologies
-
-
-
+💡 Global knowledge
+- Sectors of interests : Energytech, Biotechnology, Economics, Ethics
+- Languages : French Native, English : fluent (TOEIC : 960), Spanish : fluent, Mandarin : Beginner
+- Sports : Climbing, Salsa, Surf
 
 
-Langages : Python (Pandas, NumPy, PyTorch, Scikit-learn, DEAP, Gymnasium, Plotly), SQL, R, Excel
-
-
-
-Domaines d’application : Énergie (prévision des prix, transition énergétique), transport (optimisation de plannings), socio-économie
-
-Langues
-
-
-
-
-
-Français (natif) | Anglais (courant, TOEIC: 960) | Espagnol (courant) | Chinois (débutant)
-
-
-
-🏆 Projets Phares
-
-Optimisation & Énergie
-
-
-
-
-
-Modèle d’optimisation fiscale pour l’électricité (Selfee - Crédit Agricole, 2026)
 
 
 
