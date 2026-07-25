@@ -12,8 +12,8 @@ Back in France, I spent my gap year applying my mathematical expertise to the **
 I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale Méditerranée**, while working on **OR projects to deepen my expertise in these fields**. In the future, I aim to tackle tomorrow’s challenges by joining a **consulting firm or a high-tech company specializing in Energy, Biotechnology, or Economics**.
 
 📍 Based in Provence | Open to international opportunities
-📧 victorien.bigarre@centralelille.fr
-🔗 LinkedIn  (www.linkedin.com/in/victorienbigarre)
+📧 email : victorien.bigarre@centralelille.fr
+🔗 LinkedIn : www.linkedin.com/in/victorienbigarre
 
 ---
 
