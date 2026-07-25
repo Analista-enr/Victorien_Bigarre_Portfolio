@@ -57,4 +57,4 @@ This portfolio includes projects I developed throughout my academic journey. Eac
 - **Sports:** Climbing, Salsa, Surf
 
 ---
-*"We have a world to build."* 🌱
+As we say in Centrale Méditerranée : *"We have a world to build."* 🌱
