@@ -28,7 +28,6 @@ This portfolio includes projects I developed throughout my academic journey. Eac
 - **PROJECT 2: Train Reassignment at Marseille St-Charles Station**
   Managing arrivals at transport hubs is a daily challenge. As one of France’s busiest train stations, **Marseille St-Charles** must quickly reassign trains to compensate for delays or early arrivals without altering previously announced schedules. Given the large number of trains and the size of the hub, this combinatorial problem requires finding a **feasible solution in under 3 minutes** with minimal overlap. Based on **real SNCF data and constraints**, this project includes a **comparison with Hexaly’s solver**, which serves as a benchmark.
 
----
 
 ---
 
