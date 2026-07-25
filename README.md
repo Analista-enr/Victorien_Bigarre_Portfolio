@@ -14,7 +14,7 @@ Now, I am happy to join Centrale Mediterranée for a Master Degree in Data Scien
 📧 victorien.bigarre@centrale.centralelille.fr
 🔗 LinkedIn 
 
-Portfolio Structure :
+**Portfolio Structure :**
 - 
 
 
