@@ -13,7 +13,7 @@ I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale 
 
 📍 **Based in Provence** | Open to international opportunities
 📧 [victorien.bigarre@centralelille.fr](mailto:victorien.bigarre@centralelille.fr)
-🔗 [LinkedIn](lien)
+🔗 [LinkedIn](www.linkedin.com/in/victorienbigarre)
 
 ---
 
