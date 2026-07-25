@@ -15,7 +15,6 @@ Now, I am happy to join Centrale Mediterranée for a Master Degree in Data Scien
 🔗 LinkedIn 
 
 **Portfolio Structure :**
-- 
 
 **Resumé**
 💡 Technical skills
