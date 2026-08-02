@@ -8,6 +8,11 @@ This problem is inspired by INFORMS Transactions on Education and aims to **mini
 - Comparison with a naive approximation.
 - Dashboard visualizing queue dynamics, stress periods, and Pareto-optimal solutions based on optional inputs.
 
+**Modeling Decisions:**
+- Passenger numbers are converted into **passenger-minutes** to standardize queue metrics.
+- The objective function minimizes the **total number of customs officers** and the **mean passenger-minutes in the queue** over the studied period.
+- The average waiting time constraint is satisfied using the mean passenger-minutes in the queue.
+
 **Parameters:**
 - **Mandatory inputs:**
   - Schedule of arrivals (origin, date, time, number of passengers).
@@ -23,10 +28,7 @@ This problem is inspired by INFORMS Transactions on Education and aims to **mini
   - Each worker is assigned to one quarter of the day.
   - All inputs have default definitions.
 
-**Modeling Decisions:**
-- Passenger numbers are converted into **passenger-minutes** to standardize queue metrics.
-- The objective function minimizes the **total number of customs officers** and the **mean passenger-minutes in the queue** over the studied period.
-- The average waiting time constraint is satisfied using the mean passenger-minutes in the queue.
+
 
 
 
