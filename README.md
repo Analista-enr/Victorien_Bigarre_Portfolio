@@ -20,7 +20,8 @@ I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale 
 ---
 
 ### **📂 Portfolio Structure**
-This portfolio includes projects I developed throughout my academic journey. Each project addresses **real-world problems** using a variety of **ML and OR techniques**.
+(Please, note that this portfolio is evolving : some projetcs are not yet available for cloning, they are here for demonstration)
+This portfolio includes projects I developed throughout my academic journey. Each project addresses **real-world problems** using a variety of **ML and OR techniques**. 
 
 - **PROJECT 1: Customs Scheduling**
   Airport arrivals fluctuate significantly throughout the day. An effective customs scheduling system must **minimize operational costs** while ensuring **passenger waiting times remain within acceptable limits**. This project optimizes the **total number of customs agents** subject to a given flight schedule and average waiting time constraint. Additionally, based on the marginal cost of customers and waiting time, the algorithm provides a **Pareto-optimal solution**.
