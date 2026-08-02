@@ -20,7 +20,8 @@ I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale 
 ---
 
 ### **📂 Portfolio Structure**
-(Please, note that this portfolio is evolving : some projetcs are not yet available for cloning, they are here for demonstration)
+(Please, note that this portfolio is evolving : some projetcs are not yet available for cloning, they are here for demonstration).
+
 This portfolio includes projects I developed throughout my academic journey. Each project addresses **real-world problems** using a variety of **ML and OR techniques**. 
 
 - **PROJECT 1: Customs Scheduling**
