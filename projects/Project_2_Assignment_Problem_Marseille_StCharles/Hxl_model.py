@@ -1,7 +1,9 @@
+from typing import List, Optional, Tuple
+
 import hexaly.optimizer
-from typing import List, Tuple, Optional
-from data_process import TrainScheduler
 import pandas as pd
+from data_process import TrainScheduler
+
 
 class HexalySolver(TrainScheduler):
     """
@@ -12,7 +14,9 @@ class HexalySolver(TrainScheduler):
     def __init__(self, df: pd.DataFrame, nb_quai: int, penalty: int = 10):
         super().__init__(df, nb_quai, penalty)
 
-    def solve(self, time_limit: int = 60, output_file: Optional[str] = None) -> Tuple[List[int], float]:
+    def solve(
+        self, time_limit: int = 60, output_file: Optional[str] = None
+    ) -> Tuple[List[int], float]:
         """
         Résout le problème avec Hexaly Optimizer.
 
@@ -61,7 +65,7 @@ class HexalySolver(TrainScheduler):
             score = float(total_overlap.value * self.penalty)
 
             if output_file:
-                with open(output_file, 'w') as f:
+                with open(output_file, "w") as f:
                     f.write(f"{score}\n")
                     f.write(" ".join(map(str, solution)) + "\n")
 

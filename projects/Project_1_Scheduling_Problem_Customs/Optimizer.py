@@ -1,10 +1,7 @@
-from typing import List, Tuple, Union
+from typing import List, Union
 
 import numpy as np
 import pulp as lp
-from deap import algorithms, base, creator, tools
-from pyswarm import pso
-from scipy.optimize import differential_evolution, dual_annealing, shgo
 
 
 class Apollon:

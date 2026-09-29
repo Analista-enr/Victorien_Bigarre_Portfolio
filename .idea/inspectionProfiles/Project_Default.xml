@@ -1,0 +1,27 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="annotated-types" />
+          <option value="click" />
+          <option value="cloudpickle" />
+          <option value="farama-notifications" />
+          <option value="gymnasium" />
+          <option value="markdown-it-py" />
+          <option value="mdurl" />
+          <option value="numpy" />
+          <option value="pydantic" />
+          <option value="pydantic-core" />
+          <option value="pygame" />
+          <option value="pygments" />
+          <option value="rich" />
+          <option value="shellingham" />
+          <option value="typer" />
+          <option value="typing-inspection" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
