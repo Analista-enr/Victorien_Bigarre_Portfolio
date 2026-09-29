@@ -7,7 +7,7 @@
 ### **🚀 About Me**
 As an aspiring engineer, I aim to work at the **intersection of Operational Research and Machine Learning**. After a broad curriculum at **Centrale Lille**, where I studied mathematics, physics, and chemistry, I pursued a specialization in **applied mathematics at Universidad de Chile**.
 
-Back in France, I spent my gap year applying my mathematical expertise to the **energy sector**, designing **energy transition trajectories for the Global South** and developing **ML and OR algorithms for grid management**.
+Back in France, I spent my gap year applying my mathematical expertise to the **energy sector**, designing **energy transition trajectories for the Global South** at **Enerdata** and developing **ML and OR algorithms for grid management** at **Selfee (by Crédit Agricole)**.
 
 I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale Méditerranée**, while working on **OR projects to deepen my expertise in these fields**. In the future, I aim to tackle tomorrow’s challenges by joining a **consulting firm or a high-tech company specializing in Energy, Biotechnology, or Economics**.
 
@@ -20,7 +20,9 @@ I am now pursuing a **Master’s Degree in Data Science & Economics at Centrale 
 ---
 
 ### **📂 Portfolio Structure**
-This portfolio includes projects I developed throughout my academic journey. Each project addresses **real-world problems** using a variety of **ML and OR techniques**.
+(Please, note that this portfolio is evolving : some projetcs are not yet available for cloning, they are here for demonstration).
+
+This portfolio includes projects I developed throughout my academic journey. Each project addresses **real-world problems** using a variety of **ML and OR techniques**. 
 
 - **PROJECT 1: Customs Scheduling**
   Airport arrivals fluctuate significantly throughout the day. An effective customs scheduling system must **minimize operational costs** while ensuring **passenger waiting times remain within acceptable limits**. This project optimizes the **total number of customs agents** subject to a given flight schedule and average waiting time constraint. Additionally, based on the marginal cost of customers and waiting time, the algorithm provides a **Pareto-optimal solution**.
@@ -57,4 +59,4 @@ This portfolio includes projects I developed throughout my academic journey. Eac
 - **Sports:** Climbing, Salsa, Surf
 
 ---
-*"We have a world to build."* 🌱
+As we say in Centrale Méditerranée : *"We have a world to build."* 🌱
