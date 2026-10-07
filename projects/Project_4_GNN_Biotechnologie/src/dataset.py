@@ -45,7 +45,7 @@ class Data:
     def __init__(self):
         self.df = self.load_tox21()  # dataset brut
         self.features = self.build_feature_matrix(self.df)  # dataset fingerprint
-        self.gram_tanimoto=self.tanimoto_kernel(self.features, self.features)
+        self.gram_tanimoto = self.tanimoto_kernel(self.features, self.features)
         self.labels = self.stack_labels(self.df)
         self.EDA_resume = self.EDA_statistique(self.df)  # resume of dataset description
 
