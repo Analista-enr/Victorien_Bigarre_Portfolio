@@ -1,22 +1,12 @@
-from itertools import product
 from pathlib import Path
-from typing import List, Tuple
 
 import lightgbm as lgb
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
 from dataset import Data
-from lightgbm import LGBMClassifier
-from rdkit import Chem
-from rdkit.Chem import rdFingerprintGenerator
-from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.metrics import roc_auc_score
 from sklearn.svm import SVC, LinearSVC
-from torch_geometric.datasets import MoleculeNet
-from torch_geometric.loader import DataLoader
 from tqdm import tqdm
 
 TASK_NAMES = [
@@ -46,15 +36,20 @@ class Gaia:
             "SVM_Tanimoto": self._fit_svm_tanimoto,
             "LGBM": self._fit_lgbm,
         }
+        self.PREDICTORS = {
+            "SVM_Linear": self._predict_svm_linear,
+            "SVM_Tanimoto": self._predict_svm_tanimoto,
+            "LGBM": self._predict_lgbm,
+        }
         self.Hparams = {
             "SVM_Linear": 1,
-            "SVM_Tanimoto": 1,
+            "SVM_Tanimoto": 0.6075,
             "LGBM": {
+                "num_leaves": 56,
+                "n_estimators": 746,
+                "learning_rate": 0.01,
+                "L2": 15.2,
                 "L1": 0,
-                "L2": 1,
-                "n_estimators": 300,
-                "learning_rate": 0.05,
-                "num_leaves": 31,
             },
         }
         self.score = self.pipeline(model_name, seed_list, params)
@@ -103,7 +98,7 @@ class Gaia:
             Xtr, ytr
         )
 
-    def _fit_svm_tanimoto(self, ytr, G_tt, p):
+    def _fit_svm_tanimoto(self, Xtr, ytr, G_tt, p):
         """SVM a noyau Tanimoto precompute. Xtr ignore (le modele ne voit que la Gram)."""
         return SVC(kernel="precomputed", C=p["C"], class_weight="balanced").fit(
             G_tt, ytr
@@ -160,12 +155,6 @@ class Gaia:
         """Probabilite de la classe positive LGBM (probas natives)."""
         return clf.predict_proba(Xte)[:, 1]
 
-    PREDICTORS = {
-        "SVM_Linear": _predict_svm_linear,
-        "SVM_Tanimoto": _predict_svm_tanimoto,
-        "LGBM": _predict_lgbm,
-    }
-
     def evaluate(self, model_name, models, idx_train, idx_test) -> dict:
         """Pipeline d'evaluation unique, miroir de training().
         Retourne {"auc_per_task": (12,), "auc_mean": float}.
@@ -198,14 +187,57 @@ class Gaia:
             # train masque : LA meme formule que training() (invariant de largeur)
             rows_tr = idx_train[~np.isnan(Y[idx_train, t])]
             G_te = G[np.ix_(rows_te, rows_tr)]  # Gram croisee test x train
-
-            scores = predict(clf, X[rows_te], G_te)
+            scores = predict(clf=clf, Xte=X[rows_te], G_te=G_te)
             aucs.append(roc_auc_score(yte, scores))
 
         aucs = np.array(aucs)
         return {"auc_per_task": aucs, "auc_mean": np.nanmean(aucs)}
 
     # ------------------------------------------------------------------------- pipeline
+    def pipeline(self, model_name="SVM", seed_list=(0, 1, 2), params=None):
+        if params is None:
+            params = {
+                "C": 1,
+                "L1": 1,
+                "L2": 10,
+                "n_estimators": 300,
+                "learning_rate": 0.05,
+                "num_leaves": 31,
+            }
+
+        val_means, test_means, test_aucs = [], [], []
+        for seed in tqdm(seed_list):
+            train, val, test = self.scaffold_split(self.DATA.df, seed=seed)
+            train = np.array(train)
+            val = np.array(val)
+            test = np.array(test)
+            models = self.training(model_name, train, params)
+
+            res_val = self.evaluate(model_name, models, train, val)
+            res_test = self.evaluate(model_name, models, train, test)  # pour
+            val_means.append(res_val["auc_mean"])
+            test_means.append(res_test["auc_mean"])
+            test_aucs.append(res_test["auc_per_task"])
+        val_means = np.array(val_means)
+        test_means = np.array(test_means)
+        test_aucs = np.array(test_aucs)
+
+        res_val = {
+            "auc_mean": np.nanmean(val_means),
+            "auc_mean_std": np.nanstd(val_means),
+        }
+        res_test = {
+            "auc_mean": np.nanmean(test_means),
+            "auc_mean_std": np.nanstd(test_means),
+            "auc_matrix": np.stack(test_aucs),
+        }
+        # self.plot_auc_per_task(model_name, res_test["auc_matrix"])
+        return {
+            "val": res_val,
+            "test": res_test,
+        }
+
+        # ------------------------------------------------------------------------- graphe
 
     def plot_auc_per_task(
         self,
@@ -244,31 +276,3 @@ class Gaia:
         print(f"Mean  : {np.mean(aucs)}, std : {np.std(aucs)}")
         print(f"Figure sauvegardee : {out}")
         return fig
-
-    # ------------------------------------------------------------------------- pipeline
-    def pipeline(self, model_name="SVM", seed_list=(0, 1, 2), params=None):
-        if params is None:  # jamais de dict par defaut mutable !
-            params = {"C": 1, "L1": 1, "L2": 10, "n_estimators": 300,
-                      "learning_rate": 0.05, "num_leaves": 31}
-
-        val_means, test_means, test_aucs = [], [], []
-        for seed in tqdm(seed_list):
-            train, val, test = self.scaffold_split(self.DATA.df, seed=seed)
-            models = self.training(model_name, train, params)
-
-            res_val = self.evaluate(model_name, models, train, val)  # pour OPTI
-            res_test = self.evaluate(model_name, models, train, test)  # pour le RAPPORT
-            val_means.append(res_val["auc_mean"])
-            test_means.append(res_test["auc_mean"])
-            test_aucs.append(res_test["auc_per_task"])
-        val_means = np.array(val_means)
-        test_means = np.array(test_means)
-        test_aucs = np.array(test_aucs)
-
-        res_val = {"auc_mean": np.nanmean(val_means),
-                        "auc_mean_std": np.nanstd(val_means)}
-        res_test = {"auc_mean": np.nanmean(test_means),
-                         "auc_mean_std": np.nanstd(test_means),
-                         "auc_matrix": np.stack(test_aucs)}
-        self.plot_auc_per_task(model_name, res_test["auc_matrix"])
-        return res_val,res_test

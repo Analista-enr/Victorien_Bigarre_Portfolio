@@ -48,6 +48,7 @@ class Data:
         self.gram_tanimoto = self.tanimoto_kernel(self.features, self.features)
         self.labels = self.stack_labels(self.df)
         self.EDA_resume = self.EDA_statistique(self.df)  # resume of dataset description
+        self.scaffold_distribution(self.df)
 
     # ------------------------------------------------------------- chargement dataset
     def load_tox21(self, root: str = "data/") -> MoleculeNet:
@@ -153,36 +154,47 @@ class Data:
                 }
             )
         df = pd.DataFrame(rows)
-        df["AUC_SVM"] = np.array(
-            [0.77, 0.84, 0.85, 0.74, 0.71, 0.81, 0.76, 0.73, 0.8, 0.74, 0.84, 0.77]
-        ) - ([0.014 for i in range(12)])
+        df["AUC_SVM"] = [
+            np.float64(0.709899967680543),
+            np.float64(0.7612540496367751),
+            np.float64(0.7559075256891493),
+            np.float64(0.6851635913663012),
+            np.float64(0.6223900607877015),
+            np.float64(0.6939021609867735),
+            np.float64(0.7169902903142342),
+            np.float64(0.6727488383005039),
+            np.float64(0.7318760431698946),
+            np.float64(0.6395327537240513),
+            np.float64(0.7571450724143143),
+            np.float64(0.6774324579321013),
+        ]
         df["AUC_SVM_Tanimoto"] = [
-            0.76,
-            0.84,
-            0.84,
-            0.75,
-            0.71,
-            0.78,
-            0.76,
-            0.765,
-            0.8,
-            0.74,
-            0.85,
-            0.78,
+            np.float64(0.7299569978469196),
+            np.float64(0.8269831053079966),
+            np.float64(0.8406611936919566),
+            np.float64(0.775625265422066),
+            np.float64(0.677631678692199),
+            np.float64(0.7376974139554984),
+            np.float64(0.7793807461255183),
+            np.float64(0.7702261897930408),
+            np.float64(0.8139151807550533),
+            np.float64(0.7444009290046436),
+            np.float64(0.8511195995310434),
+            np.float64(0.7702090311260599),
         ]
         df["AUC_LGBM"] = [
-            0.67,
-            0.79,
-            0.84,
-            0.71,
-            0.64,
-            0.71,
-            0.695,
-            0.72,
-            0.73,
-            0.71,
-            0.83,
-            0.74,
+            np.float64(0.7148657893720418),
+            np.float64(0.811033341218333),
+            np.float64(0.8271887973309026),
+            np.float64(0.7522284341744109),
+            np.float64(0.6753752610872512),
+            np.float64(0.7300185968333347),
+            np.float64(0.7382615477061526),
+            np.float64(0.7477153334130355),
+            np.float64(0.789480199880695),
+            np.float64(0.7326278490200222),
+            np.float64(0.823201484145039),
+            np.float64(0.7536326493010692),
         ]
 
         df = df.set_index("task")
@@ -230,3 +242,65 @@ class Data:
         plt.close(fig)
         print(f"Figure sauvegardée : {out}")
         return fig
+
+    def scaffold_distribution(self, dataset,
+                              out: Path = FIG_DIR / "scaffold_distribution.png"):
+        """Distribution des molecules par scaffold.
+
+        Retourne un DataFrame descriptif (une ligne par famille) et produit
+        une figure a double volet :
+          - gauche : histogramme des tailles de familles (echelle log!)
+          - droite  : courbe de Pareto (part cumulee des molecules selon
+                      les k plus grosses familles) — LA lecture cle.
+        """
+        # -- 1. familles : scaffold -> liste des indices de ses molecules --
+        scaffold_to_idx = {}
+        for i in range(len(dataset)):
+            scaffold_to_idx.setdefault(
+                self.murcko_scaffold_smiles(dataset[i]), []
+            ).append(i)
+
+        sizes = np.array([len(v) for v in scaffold_to_idx.values()])
+
+        # -- 2. statistiques descriptives --
+        stats = {
+            "n_molecules": len(dataset),
+            "n_scaffolds": len(scaffold_to_idx),
+            "mean_family_size": sizes.mean(),
+            "median_family_size": np.median(sizes),
+            "max_family_size": sizes.max(),
+            "n_singletons": int((sizes == 1).sum()),  # familles d'UNE molecule
+            "top10_share": np.sort(sizes)[-10:].sum() / len(dataset),  # part des 10 plus grosses
+        }
+
+        # -- 3. figure --
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+
+        # volet 1 : histogramme des tailles (log-x : sinon la longue trainee ecrase tout)
+        ax1.hist(np.log10(sizes), bins=40, color="#4C72B0", edgecolor="white")
+        ax1.set_xlabel("log10(taille de la famille)")
+        ax1.set_ylabel("Nombre de familles")
+        ax1.set_title(f"{stats['n_scaffolds']} familles de scaffolds")
+        ax1.axvline(np.log10(np.median(sizes)), color="red", linestyle="--",
+                    label=f"mediane = {stats['median_family_size']:.0f}")
+        ax1.legend()
+
+        # volet 2 : Pareto — part cumulee des molecules couverte par les k plus grosses familles
+        sizes_sorted = np.sort(sizes)[::-1]
+        cumul = np.cumsum(sizes_sorted) / len(dataset)
+        ax2.plot(np.arange(1, len(sizes_sorted) + 1), cumul, color="#C44E52")
+        ax2.axhline(0.8, color="gray", linestyle=":", label="80% des molecules")
+        ax2.set_xlabel("k plus grosses familles")
+        ax2.set_ylabel("Part cumulee des molecules")
+        ax2.set_title("Courbe de Pareto : concentration du dataset")
+        ax2.legend()
+
+        fig.suptitle("Distribution des molecules par scaffold (Tox21)")
+        fig.tight_layout()
+        fig.savefig(out, dpi=150)
+        plt.close(fig)
+        print(f"Figure sauvegardee : {out}")
+
+        for k, v in stats.items():
+            print(f"{k:>22} : {v}")
+        return stats
