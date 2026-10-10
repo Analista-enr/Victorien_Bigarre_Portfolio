@@ -41,17 +41,6 @@ class Gaia:
             "SVM_Tanimoto": self._predict_svm_tanimoto,
             "LGBM": self._predict_lgbm,
         }
-        self.Hparams = {
-            "SVM_Linear": 1,
-            "SVM_Tanimoto": 0.6075,
-            "LGBM": {
-                "num_leaves": 56,
-                "n_estimators": 746,
-                "learning_rate": 0.01,
-                "L2": 15.2,
-                "L1": 0,
-            },
-        }
         self.score = self.pipeline(model_name, seed_list, params)
 
     # ------------------------------------------------------------------ scaffold split

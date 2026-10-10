@@ -43,12 +43,14 @@ MORGAN_GEN = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
 
 class Data:
     def __init__(self):
-        self.df = self.load_tox21()  # dataset brut
+        self.df, self.df_report = self.clean_dataset(
+            self.load_tox21()
+        )  # dataset nettoyé
         self.features = self.build_feature_matrix(self.df)  # dataset fingerprint
         self.gram_tanimoto = self.tanimoto_kernel(self.features, self.features)
         self.labels = self.stack_labels(self.df)
-        self.EDA_resume = self.EDA_statistique(self.df)  # resume of dataset description
-        self.scaffold_distribution(self.df)
+        # self.EDA_resume = self.EDA_statistique(self.df)  # resume of dataset description
+        # self.scaffold_distribution(self.df)
 
     # ------------------------------------------------------------- chargement dataset
     def load_tox21(self, root: str = "data/") -> MoleculeNet:
@@ -58,6 +60,73 @@ class Data:
         dataset = MoleculeNet(root=root, name="Tox21")
         print(f"Tox21 : {len(dataset)} molecules")
         return dataset
+
+    def clean_dataset(self, dataset) -> tuple:
+        """Nettoyage AVANT tout le reste (split, features).
+
+        1. SMILES invalides (MolFromSmiles -> None) : supprimes.
+        2. Doublons (par SMILES canonique) :
+           - labels identiques            -> une copie conservee
+           - conflit 0/1 sur une tache    -> composé supprimé
+           - annotations complementaires -> fusionnees (le non-NaN gagne)
+
+        Retourne (dataset_clean, rapport: dict).
+        """
+        kept, seen = [], {}  # seen: canonique -> index dans kept
+        n_invalid = n_dup_identical = n_conflict = n_merged = 0
+
+        for d in dataset:
+            mol = Chem.MolFromSmiles(d.smiles)
+            if mol is None:
+                n_invalid += 1
+                continue
+            canon = Chem.MolToSmiles(mol)  # la CLE : forme canonique
+
+            if canon not in seen:
+                seen[canon] = len(kept)
+                kept.append(d)
+                continue
+
+            # --- doublon : comparer les labels ---
+            first = kept[seen[canon]]
+            y_new = np.asarray(d.labels)  # (12,) avec NaN
+            y_old = np.asarray(first.labels)
+
+            both = ~np.isnan(y_new) & ~np.isnan(y_old)  # taches annotées des 2 cotes
+            conflict = both & (y_new != y_old)  # 0 vs 1 : contradiction
+
+            if conflict.any():
+                n_conflict += 1
+                kept[seen[canon]] = None  # marqué : on supprimera
+                # (le doublon courant n'est pas garde non plus)
+            elif (
+                (y_new[~np.isnan(y_new)] == y_old[~np.isnan(y_new)]).all()
+                and np.isnan(y_old[both]).any() is False
+                and (y_new[both] == y_old[both]).all()
+            ):
+                n_merged += 1  # fusion : combler les NaN de la copie garde
+                fill = ~np.isnan(y_new) & np.isnan(y_old)
+                if fill.any():
+                    first.labels[fill] = y_new[fill]
+            else:
+                n_merged += 1
+                fill = ~np.isnan(y_new) & np.isnan(y_old)
+                if fill.any():
+                    first.labels[fill] = y_new[fill]
+
+        kept = [d for d in kept if d is not None]
+        # renumerote seen inutile : kept est deja le dataset final
+
+        report = {
+            "n_initial": len(dataset),
+            "n_invalid_smiles": n_invalid,
+            "n_conflicting_duplicates_removed": n_conflict,
+            "n_duplicates_merged": n_merged,
+            "n_final": len(kept),
+        }
+        # for k, v in report.items():
+        #     print(f"{k:>35} : {v}")
+        return kept, report
 
     # ------------------------------------------------------------- vectorisation
     def murcko_scaffold_smiles(self, data) -> str:
@@ -155,32 +224,32 @@ class Data:
             )
         df = pd.DataFrame(rows)
         df["AUC_SVM"] = [
-            np.float64(0.709899967680543),
-            np.float64(0.7612540496367751),
-            np.float64(0.7559075256891493),
-            np.float64(0.6851635913663012),
-            np.float64(0.6223900607877015),
-            np.float64(0.6939021609867735),
-            np.float64(0.7169902903142342),
-            np.float64(0.6727488383005039),
-            np.float64(0.7318760431698946),
-            np.float64(0.6395327537240513),
-            np.float64(0.7571450724143143),
-            np.float64(0.6774324579321013),
+            np.float64(0.7637564381759371),
+            np.float64(0.8346816508577228),
+            np.float64(0.8383128855542126),
+            np.float64(0.7379983135662949),
+            np.float64(0.7036555204015106),
+            np.float64(0.7790513681066347),
+            np.float64(0.7516067023086201),
+            np.float64(0.7392137017117733),
+            np.float64(0.7877337811030495),
+            np.float64(0.719773581848089),
+            np.float64(0.8325107776183542),
+            np.float64(0.751375456204357),
         ]
         df["AUC_SVM_Tanimoto"] = [
-            np.float64(0.7299569978469196),
-            np.float64(0.8269831053079966),
-            np.float64(0.8406611936919566),
-            np.float64(0.775625265422066),
-            np.float64(0.677631678692199),
-            np.float64(0.7376974139554984),
-            np.float64(0.7793807461255183),
-            np.float64(0.7702261897930408),
-            np.float64(0.8139151807550533),
-            np.float64(0.7444009290046436),
-            np.float64(0.8511195995310434),
-            np.float64(0.7702090311260599),
+            np.float64(0.76636379624712),
+            np.float64(0.8508728081174223),
+            np.float64(0.8511887392169402),
+            np.float64(0.7576396341109417),
+            np.float64(0.7127062707483469),
+            np.float64(0.78081826858475),
+            np.float64(0.773847006025392),
+            np.float64(0.7706591668322907),
+            np.float64(0.8018759451236958),
+            np.float64(0.7385897030080996),
+            np.float64(0.8483839917277287),
+            np.float64(0.7801640207335038),
         ]
         df["AUC_LGBM"] = [
             np.float64(0.7148657893720418),
@@ -243,8 +312,9 @@ class Data:
         print(f"Figure sauvegardée : {out}")
         return fig
 
-    def scaffold_distribution(self, dataset,
-                              out: Path = FIG_DIR / "scaffold_distribution.png"):
+    def scaffold_distribution(
+        self, dataset, out: Path = FIG_DIR / "scaffold_distribution.png"
+    ):
         """Distribution des molecules par scaffold.
 
         Retourne un DataFrame descriptif (une ligne par famille) et produit
@@ -270,7 +340,8 @@ class Data:
             "median_family_size": np.median(sizes),
             "max_family_size": sizes.max(),
             "n_singletons": int((sizes == 1).sum()),  # familles d'UNE molecule
-            "top10_share": np.sort(sizes)[-10:].sum() / len(dataset),  # part des 10 plus grosses
+            "top10_share": np.sort(sizes)[-10:].sum()
+            / len(dataset),  # part des 10 plus grosses
         }
 
         # -- 3. figure --
@@ -281,8 +352,12 @@ class Data:
         ax1.set_xlabel("log10(taille de la famille)")
         ax1.set_ylabel("Nombre de familles")
         ax1.set_title(f"{stats['n_scaffolds']} familles de scaffolds")
-        ax1.axvline(np.log10(np.median(sizes)), color="red", linestyle="--",
-                    label=f"mediane = {stats['median_family_size']:.0f}")
+        ax1.axvline(
+            np.log10(np.median(sizes)),
+            color="red",
+            linestyle="--",
+            label=f"mediane = {stats['median_family_size']:.0f}",
+        )
         ax1.legend()
 
         # volet 2 : Pareto — part cumulee des molecules couverte par les k plus grosses familles

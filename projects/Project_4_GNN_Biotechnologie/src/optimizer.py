@@ -8,13 +8,18 @@ class Apollon:
         self.n_trials = n_trials
         self.seed_list = [i for i in range(10)]
         self.params_0 = {
-            "C": 1,
+            "C": 0.001,
             "L1": 0,
             "L2": 1,
             "n_estimators": 300,
             "learning_rate": 0.05,
             "num_leaves": 31,
         }
+        self.g = Gaia(
+            model_name=self.model_name,
+            seed_list=self.seed_list,
+            params=self.params_0,
+        )
 
         if model_name in ("SVM_Linear", "SVM_Tanimoto"):
             self.search_space = {"C": (0.001, 10, True)}
@@ -50,11 +55,7 @@ class Apollon:
 
     def objective(self, trial):
         params = self.propose_params(trial)
-        g = Gaia(
-            model_name=self.model_name,
-            seed_list=self.seed_list,
-            params=params,
-        )
+        g = self.g.pipeline(self.model_name, self.seed_list, params)
         return g.score["val"]["auc_mean"]
 
     def optimizer(self):
