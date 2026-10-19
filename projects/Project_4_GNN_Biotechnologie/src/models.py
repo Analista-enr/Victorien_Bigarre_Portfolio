@@ -47,36 +47,53 @@ class Gaia:
     def scaffold_split(
         self, dataset, frac_train=0.8, frac_val=0.1, frac_test=0.1, seed: int = 0
     ):
-        """Scaffold split : toutes les molecules d'un meme scaffold dans le MEME split
-        -> pas de fuite structurelle (contrairement au split aleatoire).
-        Groupes tries par taille decroissante, remplissage train -> val -> test,
-        ordre melange par seed -> split deterministe."""
+        """Scaffold split facon MoleculeNet/DeepChem :
+        groupes tries par taille decroissante, chaque groupe affecte au split
+        avec le plus gros quota restant. Garantit val/test non vides meme avec
+        de tres gros scaffolds. Le seed brise les egalites de taille."""
         assert abs(frac_train + frac_val + frac_test - 1.0) < 1e-6
-        rng = torch.Generator().manual_seed(seed)
+        rng = np.random.default_rng(seed)
 
         scaffold_to_idx = {}
         for i in range(len(dataset)):
             scaffold_to_idx.setdefault(
                 self.DATA.murcko_scaffold_smiles(dataset[i]), []
             ).append(i)
+        groups = [np.asarray(g, dtype=np.int64) for g in scaffold_to_idx.values()]
 
-        # Le seed doit mélanger l'ordre DES GROUPES (pas leur interieur) :
-        # permuter l'interieur d'un groupe ne change pas le split de ses membres,
-        # d'ou des results rigoureusement identiques pour tous les seeds (bug fixe).
-        groups = sorted(scaffold_to_idx.values(), key=len, reverse=True)
-        order = torch.randperm(len(groups), generator=rng).tolist()
+        # ETAPE 1 : tri par taille decroissante ; le seed melange a taille egale
+        # (les familles de 1-2 molecules sont nombreuses : c'est la que le seed agit)
+        sizes = np.array([len(g) for g in groups])
+        noise = rng.random(len(groups))  # bruit uniforme, ordre fixe par seed
+        order = np.lexsort((noise, -sizes))  # taille desc, puis bruit asc
         groups = [groups[k] for k in order]
 
+        # ETAPE 2 : remplissage par deficit maximal
         n = len(dataset)
-        train, val, test = [], [], []
+        quotas = {"train": frac_train * n, "val": frac_val * n, "test": frac_test * n}
+        splits = {"train": [], "val": [], "test": []}
+
         for group in groups:
-            for idx in group:
-                if len(train) < frac_train * n:
-                    train.append(idx)
-                elif len(val) < frac_val * n:
-                    val.append(idx)
-                else:
-                    test.append(idx)
+            # split avec le plus grand quota restant (jamais negatif => jamais vide)
+            name = max(quotas, key=lambda k: quotas[k])
+            splits[name].append(group)
+            quotas[name] -= len(group)
+
+        train = np.concatenate(splits["train"])
+        val = np.concatenate(splits["val"])
+        test = np.concatenate(splits["test"])
+
+        # garde-fous
+        assert (
+            train.dtype == np.int64 and val.dtype == np.int64 and test.dtype == np.int64
+        )
+        assert len(val) > 0 and len(test) > 0, (
+            f"val/test vide : {len(val)}/{len(test)} — augmentez frac_val/frac_test "
+            f"ou verifiez qu'aucun scaffold ne domine le dataset"
+        )
+        assert len(train) + len(val) + len(test) == n
+        assert len(np.intersect1d(train, test)) == 0
+
         return train, val, test
 
     # --- fitters : signature UNIFORME (Xtr, ytr, G_tt, params) ---
@@ -183,7 +200,7 @@ class Gaia:
         return {"auc_per_task": aucs, "auc_mean": np.nanmean(aucs)}
 
     # ------------------------------------------------------------------------- pipeline
-    def pipeline(self, model_name="SVM", seed_list=(0, 1, 2), params=None):
+    def pipeline(self, model_name="SVM_Tanimoto", seed_list=(0, 1, 2), params=None):
         if params is None:
             params = {
                 "C": 1,
@@ -197,9 +214,6 @@ class Gaia:
         val_means, test_means, test_aucs = [], [], []
         for seed in tqdm(seed_list):
             train, val, test = self.scaffold_split(self.DATA.df, seed=seed)
-            train = np.array(train)
-            val = np.array(val)
-            test = np.array(test)
             models = self.training(model_name, train, params)
 
             res_val = self.evaluate(model_name, models, train, val)
