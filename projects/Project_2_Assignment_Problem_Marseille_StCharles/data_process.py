@@ -1,8 +1,8 @@
 from typing import Dict, List
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
 
