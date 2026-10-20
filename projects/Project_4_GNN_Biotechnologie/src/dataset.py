@@ -372,3 +372,55 @@ class Data:
         for k, v in stats.items():
             print(f"{k:>22} : {v}")
         return stats
+
+    def scaffold_split(
+        self, dataset, frac_train=0.8, frac_val=0.1, frac_test=0.1, seed: int = 0
+    ):
+        """Scaffold split facon MoleculeNet/DeepChem :
+        groupes tries par taille decroissante, chaque groupe affecte au split
+        avec le plus gros quota restant. Garantit val/test non vides meme avec
+        de tres gros scaffolds. Le seed brise les egalites de taille."""
+        assert abs(frac_train + frac_val + frac_test - 1.0) < 1e-6
+        rng = np.random.default_rng(seed)
+
+        scaffold_to_idx = {}
+        for i in range(len(dataset)):
+            scaffold_to_idx.setdefault(
+                self.murcko_scaffold_smiles(dataset[i]), []  # self, pas self.DATA
+            ).append(i)
+        groups = [np.asarray(g, dtype=np.int64) for g in scaffold_to_idx.values()]
+
+        # ETAPE 1 : tri par taille decroissante ; le seed melange a taille egale
+        # (les familles de 1-2 molecules sont nombreuses : c'est la que le seed agit)
+        sizes = np.array([len(g) for g in groups])
+        noise = rng.random(len(groups))  # bruit uniforme, ordre fixe par seed
+        order = np.lexsort((noise, -sizes))  # taille desc, puis bruit asc
+        groups = [groups[k] for k in order]
+
+        # ETAPE 2 : remplissage par deficit maximal
+        n = len(dataset)
+        quotas = {"train": frac_train * n, "val": frac_val * n, "test": frac_test * n}
+        splits = {"train": [], "val": [], "test": []}
+
+        for group in groups:
+            # split avec le plus grand quota restant (jamais negatif => jamais vide)
+            name = max(quotas, key=lambda k: quotas[k])
+            splits[name].append(group)
+            quotas[name] -= len(group)
+
+        train = np.concatenate(splits["train"])
+        val = np.concatenate(splits["val"])
+        test = np.concatenate(splits["test"])
+
+        # garde-fous
+        assert (
+            train.dtype == np.int64 and val.dtype == np.int64 and test.dtype == np.int64
+        )
+        assert len(val) > 0 and len(test) > 0, (
+            f"val/test vide : {len(val)}/{len(test)} — augmentez frac_val/frac_test "
+            f"ou verifiez qu'aucun scaffold ne domine le dataset"
+        )
+        assert len(train) + len(val) + len(test) == n
+        assert len(np.intersect1d(train, test)) == 0
+
+        return train, val, test

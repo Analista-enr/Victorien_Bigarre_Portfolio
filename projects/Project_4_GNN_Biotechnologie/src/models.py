@@ -3,7 +3,9 @@ from pathlib import Path
 import lightgbm as lgb
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
+import pandas as pd
+import json
+from datetime import datetime
 from dataset import Data
 from sklearn.metrics import roc_auc_score
 from sklearn.svm import SVC, LinearSVC
@@ -200,82 +202,143 @@ class Gaia:
         return {"auc_per_task": aucs, "auc_mean": np.nanmean(aucs)}
 
     # ------------------------------------------------------------------------- pipeline
-    def pipeline(self, model_name="SVM_Tanimoto", seed_list=(0, 1, 2), params=None):
+    def pipeline(self, model_name="SVM_Tanimoto", seed_list=(0, 1, 2), params=None,
+                 evaluate_test=True, save_results=True):
+
         if params is None:
             params = {
-                "C": 1,
-                "L1": 1,
-                "L2": 10,
-                "n_estimators": 300,
-                "learning_rate": 0.05,
-                "num_leaves": 31,
+                "C": 0.605,
+                "num_leaves": 56,
+                "n_estimators": 746,
+                "learning_rate": 0.0997,
+                "L2": 15.21,
+                "L1": 0,
             }
 
         val_means, test_means, test_aucs = [], [], []
         for seed in tqdm(seed_list):
+            self._current_seed = seed  # pour random_state LGBM
             train, val, test = self.scaffold_split(self.DATA.df, seed=seed)
             models = self.training(model_name, train, params)
 
             res_val = self.evaluate(model_name, models, train, val)
-            res_test = self.evaluate(model_name, models, train, test)  # pour
             val_means.append(res_val["auc_mean"])
-            test_means.append(res_test["auc_mean"])
-            test_aucs.append(res_test["auc_per_task"])
-        val_means = np.array(val_means)
-        test_means = np.array(test_means)
-        test_aucs = np.array(test_aucs)
+            val_aucs = res_val["auc_per_task"]  # dernier seed, pour le CSV
+            if evaluate_test:
+                res_test = self.evaluate(model_name, models, train, test)
+                test_means.append(res_test["auc_mean"])
+                test_aucs.append(res_test["auc_per_task"])
 
-        res_val = {
-            "auc_mean": np.nanmean(val_means),
-            "auc_mean_std": np.nanstd(val_means),
+        results = {
+            "model_name": model_name,
+            "params": params,
+            "n_seeds": len(seed_list),
+            "val": {
+                "auc_mean": np.nanmean(val_means),
+                "auc_mean_std": np.nanstd(val_means),
+            },
         }
-        res_test = {
-            "auc_mean": np.nanmean(test_means),
-            "auc_mean_std": np.nanstd(test_means),
-            "auc_matrix": np.stack(test_aucs),
-        }
-        # self.plot_auc_per_task(model_name, res_test["auc_matrix"])
-        return {
-            "val": res_val,
-            "test": res_test,
-        }
+        if evaluate_test:
+            results["test"] = {
+                "auc_mean": np.nanmean(test_means),
+                "auc_mean_std": np.nanstd(test_means),
+                "auc_matrix": np.stack(test_aucs),
+            }
+        #if save_results:
+            # self.summarize(results)
 
-        # ------------------------------------------------------------------------- graphe
+        return results
 
-    def plot_auc_per_task(
-        self,
-        model_name: str,
-        auc_matrix: np.ndarray,
-        out: Path = FIG_DIR / "auc_per_task.png",
-    ):
+    # ------------------------------------------------------------------------- synthese
+    def summarize(self, results: dict, out_dir: Path = Path("results")) -> Path:
+        """Sauvegarde UNE version synthetique du run :
+        - {model}_{split}_summary.json : metriques globales + params + horodatage,
+        - {model}_{split}_per_task.csv : AUC par tache (moyenne +/- std sur seeds).
+        Un run complet = 2 fichiers, prefixes par le nom du modele et le split.
+        Retourne le chemin du JSON (la reference du run)."""
+        out_dir.mkdir(parents=True, exist_ok=True)
+        model = results["model_name"]
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # -- 1. perimetre : val seule, ou val + test --
+        scopes = {"val": results["val"]}
+        if "test" in results:
+            scopes["test"] = results["test"]
+
+        # -- 2. CSV par tache : une ligne par (task), colonnes val/test --
+        df = pd.DataFrame({"task": TASK_NAMES})
+        for scope, res in scopes.items():
+            if "auc_matrix" in res:  # moyenne +/- std sur seeds
+                df[f"{scope}_auc"] = np.nanmean(res["auc_matrix"], axis=0)
+                df[f"{scope}_auc_std"] = np.nanstd(res["auc_matrix"], axis=0)
+            else:  # val en pipeline light
+                df[f"{scope}_auc"] = res.get("auc_per_task", np.nan)
+                df[f"{scope}_auc_std"] = np.nan
+        csv_path = out_dir / f"{model}_{ts}_per_task.csv"
+        df.to_csv(csv_path, index=False)
+
+        # -- 3. JSON : le resume machine-lisible du run --
+        summary = {
+            "model_name": model,
+            "params": results["params"],
+            "n_seeds": results["n_seeds"],
+            "timestamp": ts,
+            "per_task_csv": csv_path.name,
+        }
+        for scope, res in scopes.items():
+            summary[scope] = {
+                "auc_mean": float(res["auc_mean"]),
+                "auc_mean_std": float(res["auc_mean_std"]),
+            }
+
+        json_path = out_dir / f"{model}_{ts}_summary.json"
+        with open(json_path, "w") as f:
+            json.dump(summary, f, indent=2)
+
+        # -- 4. lecture console compacte --
+        print(f"\n===== {model} ({results['n_seeds']} seeds) =====")
+        for scope, res in scopes.items():
+            print(f"{scope:>5} AUC : {res['auc_mean']:.4f} +/- {res['auc_mean_std']:.4f}")
+        print(f"Resume : {json_path}")
+
+        # -- 5. figure (test en priorite, sinon val) --
+        plot_scope = "test" if "test" in results else "val"
+        if "auc_matrix" in results[plot_scope]:
+            self.plot_auc_per_task(results, scope=plot_scope)
+
+        return json_path
+    # ------------------------------------------------------------------------- graphe
+
+    def plot_auc_per_task(self, results: dict, scope: str = "test",
+                          out: Path | None = None) -> "plt.Figure":
         """Barres horizontales : AUC par tache (moyenne +/- std sur les seeds).
-        Sauvegarde dans results/figures (versionne) + retourne la figure."""
-        aucs = np.nanmean(auc_matrix, axis=0)
-        stds = np.nanstd(auc_matrix, axis=0)
-        order = np.argsort(aucs)  # triees de la pire a la meilleure
+        Prend le dict de resultats complet + le scope ('val' ou 'test')."""
+        res = results[scope]
+        if "auc_matrix" not in res:
+            raise ValueError(f"Pas de auc_matrix pour scope={scope!r} "
+                             f"(il faut evaluate_test=True ou plusieurs seeds).")
+
+        model_name = results["model_name"]
+        if out is None:
+            out = FIG_DIR / f"{model_name}_auc_per_task_{scope}.png"
+
+        aucs = np.nanmean(res["auc_matrix"], axis=0)
+        stds = np.nanstd(res["auc_matrix"], axis=0)
+        order = np.argsort(aucs)
 
         fig, ax = plt.subplots(figsize=(8, 5))
-        ax.barh(
-            np.array(TASK_NAMES)[order],
-            aucs[order],
-            xerr=stds[order],
-            color="#4C72B0",
-            alpha=1,
-        )
+        ax.barh(np.array(TASK_NAMES)[order], aucs[order], xerr=stds[order],
+                color="#4C72B0", alpha=1)
         ax.axvline(0.5, color="red", linestyle="--", linewidth=1, label="Hasard (0.5)")
-        ax.axvline(
-            np.mean(aucs),
-            color="orange",
-            linestyle="--",
-            linewidth=1,
-            label=" Mean of models",
-        )
+        ax.axvline(np.nanmean(aucs), color="orange", linestyle="--", linewidth=1,
+                   label=f"Moyenne ({np.nanmean(aucs):.3f})")
         ax.set_xlim(0.4, 1)
-        ax.set_xlabel("AUC ROC (test, scaffold split)")
-        ax.set_title(f"Baseline {model_name} + ECFP4 - AUC par tache")
+        ax.set_xlabel(f"AUC ROC ({scope}, scaffold split)")
+        ax.set_title(f"{model_name} + ECFP4 - AUC par tache ({results['n_seeds']} seeds)")
         ax.legend()
         fig.tight_layout()
         fig.savefig(out, dpi=150)
-        print(f"Mean  : {np.mean(aucs)}, std : {np.std(aucs)}")
+        plt.close(fig)
         print(f"Figure sauvegardee : {out}")
         return fig
+
