@@ -25,15 +25,19 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
+from dataset import TASK_NAMES
 from sklearn.metrics import roc_auc_score
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch_geometric.loader import DataLoader as GraphLoader
-from torch_geometric.nn import GATv2Conv, global_add_pool, global_max_pool, global_mean_pool
+from torch_geometric.nn import (
+    GATv2Conv,
+    global_add_pool,
+    global_max_pool,
+    global_mean_pool,
+)
 from torch_geometric.utils.smiles import e_map, x_map
 from tqdm import tqdm
-
-from dataset import TASK_NAMES
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 N_TASKS = len(TASK_NAMES)
@@ -67,8 +71,14 @@ class GAT(torch.nn.Module):
     - tete MLP partagee -> 12 logits (pas de sigmoid : la loss s'en charge).
     """
 
-    def __init__(self, hidden: int = 128, heads: int = 4, n_layers: int = 3,
-                 n_tasks: int = N_TASKS, dropout: float = 0.2):
+    def __init__(
+        self,
+        hidden: int = 128,
+        heads: int = 4,
+        n_layers: int = 3,
+        n_tasks: int = N_TASKS,
+        dropout: float = 0.2,
+    ):
         super().__init__()
         assert hidden % heads == 0, "hidden doit etre multiple de heads"
         self.dropout = dropout
@@ -79,8 +89,14 @@ class GAT(torch.nn.Module):
         self.norms = torch.nn.ModuleList()
         for _ in range(n_layers):
             self.convs.append(
-                GATv2Conv(hidden, hidden // heads, heads=heads, edge_dim=hidden,
-                          dropout=dropout, add_self_loops=True)
+                GATv2Conv(
+                    hidden,
+                    hidden // heads,
+                    heads=heads,
+                    edge_dim=hidden,
+                    dropout=dropout,
+                    add_self_loops=True,
+                )
             )  # concat des tetes -> hidden : le residu est donc possible
             self.norms.append(torch.nn.LayerNorm(hidden))
 
@@ -92,20 +108,24 @@ class GAT(torch.nn.Module):
         )
 
     def forward(self, x, edge_index, edge_attr, batch):
-        h = self.atom_enc(x)                 # (n_atomes_total, hidden)
-        e = self.bond_enc(edge_attr)         # (n_liaisons_total, hidden)
+        h = self.atom_enc(x)  # (n_atomes_total, hidden)
+        e = self.bond_enc(edge_attr)  # (n_liaisons_total, hidden)
 
         for conv, norm in zip(self.convs, self.norms):
-            h = h + conv(h, edge_index, edge_attr=e)   # residu
+            h = h + conv(h, edge_index, edge_attr=e)  # residu
             h = norm(h)
             h = F.relu(h)
             h = F.dropout(h, p=self.dropout, training=self.training)
 
         mol = torch.cat(
-            [global_mean_pool(h, batch), global_add_pool(h, batch), global_max_pool(h, batch)],
+            [
+                global_mean_pool(h, batch),
+                global_add_pool(h, batch),
+                global_max_pool(h, batch),
+            ],
             dim=1,
-        )                                    # (batch_size, 3 * hidden)
-        return self.head(mol)                # (batch_size, 12)
+        )  # (batch_size, 3 * hidden)
+        return self.head(mol)  # (batch_size, 12)
 
 
 # ==================================================================== entraineur
@@ -116,28 +136,40 @@ class GATTrainer:
     def __init__(self, data, params=None):
         self.DATA = data
         self.params = {
-            "hidden": 128, "heads": 4, "n_layers": 3,
-            "dropout": 0.2, "lr": 1e-3, "weight_decay": 1e-4,
-            "batch_size": 256, "epochs": 100, "patience": 15,
-            "task_balanced_loss": True,   # moyenne par tache puis sur les taches
+            "hidden": 128,
+            "heads": 4,
+            "n_layers": 3,
+            "dropout": 0.2,
+            "lr": 1e-3,
+            "weight_decay": 1e-4,
+            "batch_size": 256,
+            "epochs": 100,
+            "patience": 15,
+            "task_balanced_loss": True,  # moyenne par tache puis sur les taches
             "max_pos_weight": 50.0,
-            "tensorboard": False,         # logs en direct : tensorboard --logdir results/tensorboard
+            "tensorboard": False,  # logs en direct : tensorboard --logdir results/tensorboard
         }
         if params:
             self.params.update(params)
 
-        self.Y = np.asarray(self.DATA.labels, dtype=np.float64)   # (n, 12), NaN conserves
-        self.groups = self._scaffold_groups()                     # calcule UNE fois
+        self.Y = np.asarray(
+            self.DATA.labels, dtype=np.float64
+        )  # (n, 12), NaN conserves
+        self.groups = self._scaffold_groups()  # calcule UNE fois
 
     # ------------------------------------------------------------------ splits
     def _scaffold_groups(self):
         """Familles de scaffolds : liste de tableaux d'indices."""
         scaffold_to_idx = {}
         for i, mol in enumerate(self.DATA.df):
-            scaffold_to_idx.setdefault(self.DATA.murcko_scaffold_smiles(mol), []).append(i)
+            scaffold_to_idx.setdefault(
+                self.DATA.murcko_scaffold_smiles(mol), []
+            ).append(i)
         return [np.asarray(g, dtype=np.int64) for g in scaffold_to_idx.values()]
 
-    def balanced_scaffold_split(self, seed, frac_train=0.8, frac_val=0.1, frac_test=0.1):
+    def balanced_scaffold_split(
+        self, seed, frac_train=0.8, frac_val=0.1, frac_test=0.1
+    ):
         """Scaffold split randomise (facon Chemprop) : les gros scaffolds (> moitie
         d'un jeu val/test) vont d'abord en train, le reste est melange par le seed.
         Contrairement au split deterministe, le seed change reellement les
@@ -165,14 +197,17 @@ class GATTrainer:
         train, val, test = (np.asarray(s, dtype=np.int64) for s in (train, val, test))
         assert len(val) > 0 and len(test) > 0, "val/test vide"
         assert len(train) + len(val) + len(test) == n
-        assert not (set(train) & set(val)) and not (set(train) & set(test)) \
+        assert (
+            not (set(train) & set(val))
+            and not (set(train) & set(test))
             and not (set(val) & set(test))
+        )
         return train, val, test
 
     def get_split(self, seed, split="balanced_random"):
         if split == "balanced_random":
             return self.balanced_scaffold_split(seed)
-        if split == "deterministic":   # meme split que Gaia : comparaison directe
+        if split == "deterministic":  # meme split que Gaia : comparaison directe
             return self.DATA.scaffold_split(self.DATA.df, seed=seed)
         raise ValueError(f"split inconnu : {split!r}")
 
@@ -181,7 +216,9 @@ class GATTrainer:
         """idx (np.int64) -> GraphLoader. Le masque NaN est gere par la loss :
         on garde TOUTES les molecules dans le batch."""
         graphs = [self.DATA.df[i] for i in idx]
-        return GraphLoader(graphs, batch_size=self.params["batch_size"], shuffle=shuffle)
+        return GraphLoader(
+            graphs, batch_size=self.params["batch_size"], shuffle=shuffle
+        )
 
     def compute_pos_weight(self, idx_train):
         """pos_weight par tache, calcule sur le TRAIN uniquement."""
@@ -200,9 +237,9 @@ class GATTrainer:
         )
         loss = loss * mask
         if self.params["task_balanced_loss"]:
-            per_task = loss.sum(0) / mask.sum(0).clamp(min=1)   # moyenne par tache
-            return per_task[mask.any(0)].mean()                 # puis sur les taches presentes
-        return loss.sum() / mask.sum().clamp(min=1)             # moyenne sur les labels reels
+            per_task = loss.sum(0) / mask.sum(0).clamp(min=1)  # moyenne par tache
+            return per_task[mask.any(0)].mean()  # puis sur les taches presentes
+        return loss.sum() / mask.sum().clamp(min=1)  # moyenne sur les labels reels
 
     # ------------------------------------------------------------ boucles / AUC
     def run_epoch(self, model, loader, pos_weight, optimizer=None):
@@ -214,7 +251,7 @@ class GATTrainer:
         with torch.set_grad_enabled(train_mode):
             for batch in loader:
                 batch = batch.to(DEVICE)
-                y = batch.y.view(-1, N_TASKS).float()      # (B, 12) avec NaN
+                y = batch.y.view(-1, N_TASKS).float()  # (B, 12) avec NaN
                 logits = model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
                 loss = self.masked_bce(logits, y, pos_weight)
 
@@ -228,8 +265,11 @@ class GATTrainer:
                 all_scores.append(logits.detach().cpu().numpy())
                 all_ys.append(y.cpu().numpy())
 
-        return (total_loss / len(loader.dataset),
-                np.concatenate(all_scores), np.concatenate(all_ys))
+        return (
+            total_loss / len(loader.dataset),
+            np.concatenate(all_scores),
+            np.concatenate(all_ys),
+        )
 
     @staticmethod
     def aucs_per_task(y, scores):
@@ -255,53 +295,74 @@ class GATTrainer:
             torch.cuda.manual_seed_all(seed)
 
         p = self.params
-        model = GAT(hidden=p["hidden"], heads=p["heads"], n_layers=p["n_layers"],
-                    dropout=p["dropout"]).to(DEVICE)
-        optimizer = AdamW(model.parameters(), lr=p["lr"], weight_decay=p["weight_decay"])
+        model = GAT(
+            hidden=p["hidden"],
+            heads=p["heads"],
+            n_layers=p["n_layers"],
+            dropout=p["dropout"],
+        ).to(DEVICE)
+        optimizer = AdamW(
+            model.parameters(), lr=p["lr"], weight_decay=p["weight_decay"]
+        )
         scheduler = ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=5)
 
-        pos_weight = self.compute_pos_weight(idx_train)     # train seulement
+        pos_weight = self.compute_pos_weight(idx_train)  # train seulement
         train_loader = self.make_loader(idx_train, shuffle=True)
         val_loader = self.make_loader(idx_val)
         test_loader = self.make_loader(idx_test)
 
         writer = self._make_writer(seed)
-        history = []   # une entree par epoch : sert aux courbes et au CSV
+        history = []  # une entree par epoch : sert aux courbes et au CSV
         best_val, best_state, best_epoch, wait = -np.inf, None, 0, 0
         pbar = tqdm(range(p["epochs"]), desc=f"seed {seed}", leave=False)
         for epoch in pbar:
             tr_loss, _, _ = self.run_epoch(model, train_loader, pos_weight, optimizer)
             val_loss, s_val, y_val = self.run_epoch(model, val_loader, pos_weight)
             val_auc, _ = self.aucs_per_task(y_val, s_val)
-            lr = optimizer.param_groups[0]["lr"]     # lr utilise pendant cette epoch
+            lr = optimizer.param_groups[0]["lr"]  # lr utilise pendant cette epoch
             if not np.isnan(val_auc):
                 scheduler.step(val_auc)
 
-            history.append({"epoch": epoch + 1, "train_loss": tr_loss,
-                            "val_loss": val_loss, "val_auc": val_auc, "lr": lr})
+            history.append(
+                {
+                    "epoch": epoch + 1,
+                    "train_loss": tr_loss,
+                    "val_loss": val_loss,
+                    "val_auc": val_auc,
+                    "lr": lr,
+                }
+            )
             if writer is not None:
                 writer.add_scalar("loss/train", tr_loss, epoch + 1)
                 writer.add_scalar("loss/val", val_loss, epoch + 1)
                 writer.add_scalar("auc/val", val_auc, epoch + 1)
                 writer.add_scalar("lr", lr, epoch + 1)
 
-            if val_auc > best_val:                          # NaN > x vaut False
+            if val_auc > best_val:  # NaN > x vaut False
                 best_val, best_epoch, wait = val_auc, epoch + 1, 0
-                best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
+                best_state = {
+                    k: v.detach().clone() for k, v in model.state_dict().items()
+                }
             else:
                 wait += 1
 
-            pbar.set_postfix(train=f"{tr_loss:.3f}", val=f"{val_loss:.3f}",
-                             auc=f"{val_auc:.3f}", best=f"{best_val:.3f}@{best_epoch}",
-                             wait=f"{wait}/{p['patience']}")
+            pbar.set_postfix(
+                train=f"{tr_loss:.3f}",
+                val=f"{val_loss:.3f}",
+                auc=f"{val_auc:.3f}",
+                best=f"{best_val:.3f}@{best_epoch}",
+                wait=f"{wait}/{p['patience']}",
+            )
             if wait >= p["patience"]:
                 break
         pbar.close()
         if writer is not None:
             writer.close()
 
-        if best_state is None:                              # AUC val toujours NaN
-            raise RuntimeError("Aucun checkpoint valide : AUC val indefinie a chaque epoch.")
+        if best_state is None:  # AUC val toujours NaN
+            raise RuntimeError(
+                "Aucun checkpoint valide : AUC val indefinie a chaque epoch."
+            )
 
         model.load_state_dict(best_state)
         _, s_val, y_val = self.run_epoch(model, val_loader, pos_weight)
@@ -344,7 +405,12 @@ class GATTrainer:
         ax = axes[0]
         ax.plot(ep, tr, label="train", color="#4C72B0")
         ax.plot(ep, vl, label="val", color="#C44E52")
-        ax.axvline(best_epoch, color="green", linestyle="--", label=f"checkpoint (epoch {best_epoch})")
+        ax.axvline(
+            best_epoch,
+            color="green",
+            linestyle="--",
+            label=f"checkpoint (epoch {best_epoch})",
+        )
         ax.set_xlabel("Epoch")
         ax.set_ylabel("BCE masquee (ponderee)")
         ax.set_title("Loss")
@@ -354,8 +420,13 @@ class GATTrainer:
         ax.plot(ep, auc, color="#55A868")
         ax.axvline(best_epoch, color="green", linestyle="--")
         if 1 <= best_epoch <= len(auc):
-            ax.scatter([best_epoch], [auc[best_epoch - 1]], color="green", zorder=3,
-                       label=f"best = {auc[best_epoch - 1]:.4f}")
+            ax.scatter(
+                [best_epoch],
+                [auc[best_epoch - 1]],
+                color="green",
+                zorder=3,
+                label=f"best = {auc[best_epoch - 1]:.4f}",
+            )
             ax.legend()
         ax.set_xlabel("Epoch")
         ax.set_ylabel("AUC ROC moyenne (val)")
@@ -387,8 +458,13 @@ class GATTrainer:
         for k, (seed, hist) in enumerate(zip(seed_list, histories)):
             ep = [h["epoch"] for h in hist]
             for ax, key in zip(axes, keys):
-                ax.plot(ep, [h[key] for h in hist], color=cmap(k % 10),
-                        alpha=0.85, label=f"seed {seed}")
+                ax.plot(
+                    ep,
+                    [h[key] for h in hist],
+                    color=cmap(k % 10),
+                    alpha=0.85,
+                    label=f"seed {seed}",
+                )
             aucs = np.array([h["val_auc"] for h in hist])
             if not np.all(np.isnan(aucs)):
                 b = int(np.nanargmax(aucs))
@@ -417,8 +493,15 @@ class GATTrainer:
         print(f"Historique : {path}")
 
     # ----------------------------------------------------------------- pipeline
-    def pipeline(self, seed_list=(0, 1, 2), params=None, split="balanced_random",
-                 save_results=True, out_dir=Path("results"), plot=True):
+    def pipeline(
+        self,
+        seed_list=(0, 1, 2),
+        params=None,
+        split="balanced_random",
+        save_results=True,
+        out_dir=Path("results"),
+        plot=True,
+    ):
         if params:
             self.params.update(params)
         seed_list = list(seed_list)
@@ -431,43 +514,57 @@ class GATTrainer:
             histories.append(res["history"])
             best_epochs.append(res["best_epoch"])
             if plot:
-                self.plot_history(res["history"], res["best_epoch"], seed,
-                                  FIG_DIR / f"GATv2_{split}_seed{seed}_training.png")
+                self.plot_history(
+                    res["history"],
+                    res["best_epoch"],
+                    seed,
+                    FIG_DIR / f"GATv2_{split}_seed{seed}_training.png",
+                )
             val_means.append(res["val"]["auc_mean"])
             test_means.append(res["test"]["auc_mean"])
             val_pt.append(res["val"]["auc_per_task"])
             test_pt.append(res["test"]["auc_per_task"])
-            print(f"  seed {seed} : val {res['val']['auc_mean']:.4f} "
-                  f"test {res['test']['auc_mean']:.4f} "
-                  f"(meilleure epoch {res['best_epoch']}/{res['epochs_run']})")
+            print(
+                f"  seed {seed} : val {res['val']['auc_mean']:.4f} "
+                f"test {res['test']['auc_mean']:.4f} "
+                f"(meilleure epoch {res['best_epoch']}/{res['epochs_run']})"
+            )
 
         results = {
             "model_name": "GATv2",
             "split": split,
             "params": dict(self.params),
             "n_seeds": len(seed_list),
-            "val": {"auc_mean": np.nanmean(val_means),
-                    "auc_mean_std": np.nanstd(val_means),
-                    "auc_matrix": np.stack(val_pt)},
-            "test": {"auc_mean": np.nanmean(test_means),
-                     "auc_mean_std": np.nanstd(test_means),
-                     "auc_matrix": np.stack(test_pt)},
+            "val": {
+                "auc_mean": np.nanmean(val_means),
+                "auc_mean_std": np.nanstd(val_means),
+                "auc_matrix": np.stack(val_pt),
+            },
+            "test": {
+                "auc_mean": np.nanmean(test_means),
+                "auc_mean_std": np.nanstd(test_means),
+                "auc_matrix": np.stack(test_pt),
+            },
         }
-        print(f"\nGATv2 ({split}) | val {results['val']['auc_mean']:.4f} "
-              f"+/- {results['val']['auc_mean_std']:.4f} | "
-              f"test {results['test']['auc_mean']:.4f} "
-              f"+/- {results['test']['auc_mean_std']:.4f}")
+        print(
+            f"\nGATv2 ({split}) | val {results['val']['auc_mean']:.4f} "
+            f"+/- {results['val']['auc_mean_std']:.4f} | "
+            f"test {results['test']['auc_mean']:.4f} "
+            f"+/- {results['test']['auc_mean_std']:.4f}"
+        )
 
         results["histories"] = histories
         results["best_epochs"] = best_epochs
 
         if plot:
-            self.plot_all_seeds(histories, seed_list,
-                                FIG_DIR / f"GATv2_{split}_training_all_seeds.png")
+            self.plot_all_seeds(
+                histories, seed_list, FIG_DIR / f"GATv2_{split}_training_all_seeds.png"
+            )
         if save_results:
             self.save(results, out_dir)
-            self.save_history(histories, seed_list,
-                              Path(out_dir) / f"GATv2_{split}_history.csv")
+            self.save_history(
+                histories, seed_list, Path(out_dir) / f"GATv2_{split}_history.csv"
+            )
         return results
 
     # ---------------------------------------------------------------- sauvegarde
@@ -504,6 +601,3 @@ class GATTrainer:
             json.dump(summary, f, indent=2)
         print(f"Resume : {path}")
         return path
-
-
-

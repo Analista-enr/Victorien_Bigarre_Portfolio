@@ -1,139 +1,199 @@
-from pathlib import Path
+"""Catalogue des modeles classiques (SVM lineaire, SVM Tanimoto, LGBM) et entrainement
+sur plusieurs seeds. Ce fichier ENTRAINE ; l'evaluation (AUC) est dans evaluate.py.
+
+Chaque modele est une classe avec :
+    name            nom utilise partout ("SVM_Linear", "SVM_Tanimoto", "LGBM")
+    default_params  hyperparametres de depart
+    search_space    espace de recherche pour l'optimisation (optimizer.py le lit ici) :
+                    {param: (type, borne_min, borne_max, echelle_log)}
+    fit(data, idx_train)    entraine UN classifieur par tache (12 au total)
+    predict(data, idx)      scores (len(idx), 12) ; colonne NaN si la tache n'a pas pu
+                            etre apprise (une seule classe dans le train)
+
+Contrat avec evaluate.py : evaluate n'a PAS a connaitre les masques NaN du train ni la
+largeur de la Gram. Il appelle model.predict(data, run.val) (ou run.test), puis compare
+aux labels avec son propre masque NaN, en ignorant les taches dont le score est NaN.
+
+Gaia.train(...) retourne une liste de Run (un par seed) : split + modele entraine.
+"""
+
+from dataclasses import dataclass
 
 import lightgbm as lgb
 import numpy as np
-
-from dataset import Data
-from sklearn.metrics import roc_auc_score
 from sklearn.svm import SVC, LinearSVC
 from tqdm import tqdm
 
-TASK_NAMES = [
-    "NR-AR",
-    "NR-AR-LBD",
-    "NR-AhR",
-    "NR-ER",
-    "NR-ER-LBD",
-    "NR-PPAR-gamma",
-    "NR-Aromatase",
-    "SR-ARE",
-    "SR-ATAD5",
-    "SR-HSE",
-    "SR-MMP",
-    "SR-p53",
-]
+from dataset import TASK_NAMES, Data
 
-FIG_DIR = Path("results/figures")
-FIG_DIR.mkdir(parents=True, exist_ok=True)
+N_TASKS = len(TASK_NAMES)
 
 
-class Gaia:
-    def __init__(self, model_name, seed_list, params):
-        self.DATA = Data()
+# ====================================================================== base
+class PerTaskModel:
+    """Un classifieur binaire par tache. Les sous-classes ne definissent que
+    _fit_task (entrainer sur une tache) et _predict_task (scorer sur une tache)."""
 
-        self.TRAINERS = {
-            "SVM_Linear": self._fit_svm_linear,
-            "SVM_Tanimoto": self._fit_svm_tanimoto,
-            "LGBM": self._fit_lgbm,
-        }
+    name = None
+    default_params = {}
+    search_space = {}
 
-        self.score = self.pipeline(model_name, seed_list, params)
+    def __init__(self, params=None, seed=0):
+        params = dict(params or {})
+        unknown = set(params) - set(self.default_params)
+        if unknown:
+            raise ValueError(
+                f"{self.name} : hyperparametres inconnus {sorted(unknown)} "
+                f"(valides : {sorted(self.default_params)})"
+            )
+        self.params = {**self.default_params, **params}
+        self.seed = seed
+        self.clfs = [None] * N_TASKS  # classifieur de chaque tache
+        self.rows = [None] * N_TASKS  # lignes du train utilisees (masque NaN) par tache
 
-    # --- fitters : signature UNIFORME (Xtr, ytr, G_tt, params) ---
+    def fit(self, data, idx_train):
+        """Entraine les 12 classifieurs. Le masque NaN est calcule ici, UNE fois par tache,
+        et memorise dans self.rows (le SVM Tanimoto en a besoin pour predire)."""
+        Y = data.labels
+        for t in range(N_TASKS):
+            rows = idx_train[~np.isnan(Y[idx_train, t])]
+            y = Y[rows, t].astype(int)
+            if len(np.unique(y)) < 2:  # impossible d'apprendre avec une seule classe
+                continue
+            self.rows[t] = rows
+            self.clfs[t] = self._fit_task(data, rows, y)
+        return self
 
-    def _fit_svm_linear(self, Xtr, ytr, G_tt, p):
-        """SVM lineaire sur features. G_tt ignore (pas un modele a noyau precompute)."""
-        return LinearSVC(C=p["C"], class_weight="balanced", max_iter=10_000).fit(
-            Xtr, ytr
+    def predict(self, data, idx):
+        """Scores (len(idx), 12). Toutes les molecules de idx sont scorees pour toutes les
+        taches : c'est evaluate.py qui garde celles qui ont un label. NaN si tache non apprise."""
+        scores = np.full((len(idx), N_TASKS), np.nan)
+        for t, clf in enumerate(self.clfs):
+            if clf is not None:
+                scores[:, t] = self._predict_task(data, clf, self.rows[t], idx)
+        return scores
+
+    def _fit_task(self, data, rows, y):
+        raise NotImplementedError
+
+    def _predict_task(self, data, clf, rows, idx):
+        raise NotImplementedError
+
+
+# ==================================================================== modeles
+class SVMLinear(PerTaskModel):
+    name = "SVM_Linear"
+    default_params = {"C": 0.605}
+    search_space = {"C": ("float", 0.001, 10, True)}
+
+    def _fit_task(self, data, rows, y):
+        return LinearSVC(C=self.params["C"], class_weight="balanced", max_iter=10_000).fit(
+            data.features[rows], y
         )
 
-    def _fit_svm_tanimoto(self, Xtr, ytr, G_tt, p):
-        """SVM a noyau Tanimoto precompute. Xtr ignore (le modele ne voit que la Gram)."""
-        return SVC(kernel="precomputed", C=p["C"], class_weight="balanced").fit(
-            G_tt, ytr
-        )
+    def _predict_task(self, data, clf, rows, idx):
+        return clf.decision_function(data.features[idx])  # marge : suffisant pour l'AUC
 
-    def _fit_lgbm(self, Xtr, ytr, G_tt, p):
-        """LGBM sur features. G_tt ignore."""
-        spw = (len(ytr) - ytr.sum()) / max(ytr.sum(), 1)
+
+class SVMTanimoto(PerTaskModel):
+    name = "SVM_Tanimoto"
+    default_params = {"C": 0.605}
+    search_space = {"C": ("float", 0.001, 10, True)}
+
+    def _fit_task(self, data, rows, y):
+        G = data.gram_tanimoto[np.ix_(rows, rows)]  # Gram train x train (masque de la tache)
+        return SVC(kernel="precomputed", C=self.params["C"], class_weight="balanced").fit(G, y)
+
+    def _predict_task(self, data, clf, rows, idx):
+        # Gram croisee test x train, avec LES MEMES lignes train que pour le fit :
+        # c'est pour cela que self.rows est memorise (largeur attendue par le modele)
+        return clf.decision_function(data.gram_tanimoto[np.ix_(idx, rows)])
+
+
+class LGBM(PerTaskModel):
+    name = "LGBM"
+    default_params = {
+        "num_leaves": 56,
+        "n_estimators": 746,
+        "learning_rate": 0.0997,
+        "L2": 15.21,  # -> reg_lambda
+        "L1": 0.0,  # -> reg_alpha
+        "min_child_samples": 20,  # defaut LightGBM : comportement inchange
+        "colsample_bytree": 1.0,  # defaut LightGBM : comportement inchange
+    }
+    search_space = {
+        "num_leaves": ("int", 8, 63, False),
+        "n_estimators": ("int", 100, 800, False),
+        "learning_rate": ("float", 0.01, 0.3, True),
+        "L2": ("float", 0.001, 100, True),
+        "L1": ("float", 1e-7, 100, True),
+        "min_child_samples": ("int", 5, 100, False),
+        "colsample_bytree": ("float", 0.2, 1.0, False),
+    }
+
+    def _fit_task(self, data, rows, y):
+        p = self.params
+        n_pos = y.sum()  # >= 1 : fit() ecarte les taches a une seule classe
         return lgb.LGBMClassifier(
             reg_lambda=p["L2"],
             reg_alpha=p["L1"],
             n_estimators=p["n_estimators"],
             learning_rate=p["learning_rate"],
             num_leaves=p["num_leaves"],
-            scale_pos_weight=spw,
+            min_child_samples=p["min_child_samples"],
+            colsample_bytree=p["colsample_bytree"],
+            scale_pos_weight=(len(y) - n_pos) / n_pos,
+            random_state=self.seed,
+            force_col_wise=True,  # evite le test de strategie a chaque fit (12 fits / seed)
             verbosity=-1,
-            random_state=42,
-        ).fit(Xtr, ytr)
+        ).fit(data.features[rows], y)
 
-    def training(self, model_name, idx_train, params):
-        """Pipeline d'entrainement unique. Masque NaN calcule UNE fois par tache.
-        Chaque fitter recoit (Xtr, ytr, G_tt, params) et utilise ce qu'il veut :
-        l'orchestrateur n'a pas a savoir qui consomme quoi."""
-        if model_name not in self.TRAINERS:
-            raise ValueError(
-                f"Modele inconnu : {model_name!r}. "
-                f"Choix valides : {list(self.TRAINERS)}"
+    def _predict_task(self, data, clf, rows, idx):
+        return clf.predict_proba(data.features[idx])[:, 1]
+
+
+MODELS = {cls.name: cls for cls in (SVMLinear, SVMTanimoto, LGBM)}
+
+
+def get_model_class(model_name):
+    if model_name not in MODELS:
+        raise ValueError(f"Modele inconnu : {model_name!r}. Choix valides : {list(MODELS)}")
+    return MODELS[model_name]
+
+
+# ================================================================ entrainement
+@dataclass
+class Run:
+    """Resultat d'entrainement pour UNE seed : le split utilise + le modele entraine.
+    `split` est le NOM de la strategie ('deterministic', 'balanced_random') : evaluate.py
+    l'ecrit dans ses resultats pour qu'on sache toujours sur quel protocole ils reposent."""
+
+    seed: int
+    train: np.ndarray
+    val: np.ndarray
+    test: np.ndarray
+    model: PerTaskModel
+    split: str = "deterministic"
+
+
+class Gaia:
+    """Entraine un modele du catalogue sur plusieurs seeds. Ne calcule aucune metrique.
+    Le constructeur ne lance rien : Gaia(data) est instantane."""
+
+    def __init__(self, data=None):
+        self.DATA = data if data is not None else Data()
+
+    def train(self, model_name, seed_list=(0, 1, 2), params=None, split="deterministic",
+              progress=True):
+        """Retourne une liste de Run, un par seed.
+        - split : 'deterministic' ou 'balanced_random' (voir Data.get_split),
+        - params : hyperparametres du modele (les manquants prennent default_params)."""
+        cls = get_model_class(model_name)
+        runs = []
+        for seed in tqdm(list(seed_list), desc=model_name, disable=not progress):
+            train, val, test = self.DATA.get_split(seed, split)
+            model = cls(params, seed=seed).fit(self.DATA, train)
+            runs.append(
+                Run(seed=seed, train=train, val=val, test=test, model=model, split=split)
             )
-
-        X, Y = self.DATA.features, self.DATA.labels
-        G = self.DATA.gram_tanimoto
-        fit = self.TRAINERS[model_name]
-        models = []
-        for t in range(Y.shape[1]):
-            rows = idx_train[~np.isnan(Y[idx_train, t])]  # LE masque, une seule formule
-            ytr = Y[rows, t].astype(int)
-            models.append(fit(X[rows], ytr, G[np.ix_(rows, rows)], params))
-        return models
-
-
-    # ------------------------------------------------------------------------- pipeline
-    def pipeline(self, model_name="SVM_Tanimoto", seed_list=(0, 1, 2), params=None,
-                 evaluate_test=True, save_results=True):
-
-        if params is None:
-            params = {
-                "C": 0.605,
-                "num_leaves": 56,
-                "n_estimators": 746,
-                "learning_rate": 0.0997,
-                "L2": 15.21,
-                "L1": 0,
-            }
-
-        val_means, test_means, test_aucs = [], [], []
-        for seed in tqdm(seed_list):
-            self._current_seed = seed  # pour random_state LGBM
-            train, val, test = self.DATA.scaffold_split(self.DATA.df, seed=seed)
-            models = self.training(model_name, train, params)
-
-            res_val = self.evaluate(model_name, models, train, val)
-            val_means.append(res_val["auc_mean"])
-            val_aucs = res_val["auc_per_task"]  # dernier seed, pour le CSV
-            if evaluate_test:
-                res_test = self.evaluate(model_name, models, train, test)
-                test_means.append(res_test["auc_mean"])
-                test_aucs.append(res_test["auc_per_task"])
-
-        results = {
-            "model_name": model_name,
-            "params": params,
-            "n_seeds": len(seed_list),
-            "val": {
-                "auc_mean": np.nanmean(val_means),
-                "auc_mean_std": np.nanstd(val_means),
-            },
-        }
-        if evaluate_test:
-            results["test"] = {
-                "auc_mean": np.nanmean(test_means),
-                "auc_mean_std": np.nanstd(test_means),
-                "auc_matrix": np.stack(test_aucs),
-            }
-        #if save_results:
-            # self.summarize(results)
-
-        return results
-
-
+        return runs

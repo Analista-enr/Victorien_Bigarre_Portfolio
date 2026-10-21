@@ -25,9 +25,9 @@ def EDA_statistique(self, dataset) -> pd.DataFrame:
     # -- familles de scaffolds globales (identiques au split) --
     scaffold_to_idx = {}
     for i in range(len(dataset)):
-        scaffold_to_idx.setdefault(
-            self.murcko_scaffold_smiles(dataset[i]), []
-        ).append(i)
+        scaffold_to_idx.setdefault(self.murcko_scaffold_smiles(dataset[i]), []).append(
+            i
+        )
 
     rows = []
     for t, name in enumerate(TASK_NAMES):
@@ -121,10 +121,10 @@ def EDA_statistique(self, dataset) -> pd.DataFrame:
 
 
 def extract(
-        self,
-        df: pd.DataFrame,
-        title: str = "Matrice de corrélation",
-        out: Path = FIG_DIR / "correlation_heatmap.png",
+    self,
+    df: pd.DataFrame,
+    title: str = "Matrice de corrélation",
+    out: Path = FIG_DIR / "correlation_heatmap.png",
 ):
     """Heatmap de correlation (RdBu), divergente autour de 0.
     Rouge = correlation positive, bleu = negative (centree sur zero)."""
@@ -163,7 +163,7 @@ def extract(
 
 
 def scaffold_distribution(
-        self, dataset, out: Path = FIG_DIR / "scaffold_distribution.png"
+    self, dataset, out: Path = FIG_DIR / "scaffold_distribution.png"
 ):
     """Distribution des molecules par scaffold.
 
@@ -176,9 +176,9 @@ def scaffold_distribution(
     # -- 1. familles : scaffold -> liste des indices de ses molecules --
     scaffold_to_idx = {}
     for i in range(len(dataset)):
-        scaffold_to_idx.setdefault(
-            self.murcko_scaffold_smiles(dataset[i]), []
-        ).append(i)
+        scaffold_to_idx.setdefault(self.murcko_scaffold_smiles(dataset[i]), []).append(
+            i
+        )
 
     sizes = np.array([len(v) for v in scaffold_to_idx.values()])
 
@@ -191,7 +191,7 @@ def scaffold_distribution(
         "max_family_size": sizes.max(),
         "n_singletons": int((sizes == 1).sum()),  # familles d'UNE molecule
         "top10_share": np.sort(sizes)[-10:].sum()
-                       / len(dataset),  # part des 10 plus grosses
+        / len(dataset),  # part des 10 plus grosses
     }
 
     # -- 3. figure --
@@ -229,7 +229,6 @@ def scaffold_distribution(
     for k, v in stats.items():
         print(f"{k:>22} : {v}")
     return stats
-
 
     # ------------------------------------------------------------------------- synthese
     def summarize(self, results: dict, out_dir: Path = Path("results")) -> Path:
@@ -280,7 +279,9 @@ def scaffold_distribution(
         # -- 4. lecture console compacte --
         print(f"\n===== {model} ({results['n_seeds']} seeds) =====")
         for scope, res in scopes.items():
-            print(f"{scope:>5} AUC : {res['auc_mean']:.4f} +/- {res['auc_mean_std']:.4f}")
+            print(
+                f"{scope:>5} AUC : {res['auc_mean']:.4f} +/- {res['auc_mean_std']:.4f}"
+            )
         print(f"Resume : {json_path}")
 
         # -- 5. figure (test en priorite, sinon val) --
@@ -289,16 +290,20 @@ def scaffold_distribution(
             self.plot_auc_per_task(results, scope=plot_scope)
 
         return json_path
+
     # ------------------------------------------------------------------------- graphe
 
-    def plot_auc_per_task(self, results: dict, scope: str = "test",
-                          out: Path | None = None) -> "plt.Figure":
+    def plot_auc_per_task(
+        self, results: dict, scope: str = "test", out: Path | None = None
+    ) -> "plt.Figure":
         """Barres horizontales : AUC par tache (moyenne +/- std sur les seeds).
         Prend le dict de resultats complet + le scope ('val' ou 'test')."""
         res = results[scope]
         if "auc_matrix" not in res:
-            raise ValueError(f"Pas de auc_matrix pour scope={scope!r} "
-                             f"(il faut evaluate_test=True ou plusieurs seeds).")
+            raise ValueError(
+                f"Pas de auc_matrix pour scope={scope!r} "
+                f"(il faut evaluate_test=True ou plusieurs seeds)."
+            )
 
         model_name = results["model_name"]
         if out is None:
@@ -309,14 +314,26 @@ def scaffold_distribution(
         order = np.argsort(aucs)
 
         fig, ax = plt.subplots(figsize=(8, 5))
-        ax.barh(np.array(TASK_NAMES)[order], aucs[order], xerr=stds[order],
-                color="#4C72B0", alpha=1)
+        ax.barh(
+            np.array(TASK_NAMES)[order],
+            aucs[order],
+            xerr=stds[order],
+            color="#4C72B0",
+            alpha=1,
+        )
         ax.axvline(0.5, color="red", linestyle="--", linewidth=1, label="Hasard (0.5)")
-        ax.axvline(np.nanmean(aucs), color="orange", linestyle="--", linewidth=1,
-                   label=f"Moyenne ({np.nanmean(aucs):.3f})")
+        ax.axvline(
+            np.nanmean(aucs),
+            color="orange",
+            linestyle="--",
+            linewidth=1,
+            label=f"Moyenne ({np.nanmean(aucs):.3f})",
+        )
         ax.set_xlim(0.4, 1)
         ax.set_xlabel(f"AUC ROC ({scope}, scaffold split)")
-        ax.set_title(f"{model_name} + ECFP4 - AUC par tache ({results['n_seeds']} seeds)")
+        ax.set_title(
+            f"{model_name} + ECFP4 - AUC par tache ({results['n_seeds']} seeds)"
+        )
         ax.legend()
         fig.tight_layout()
         fig.savefig(out, dpi=150)
