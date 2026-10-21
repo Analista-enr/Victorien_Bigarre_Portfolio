@@ -1,11 +1,8 @@
 from pathlib import Path
 
 import lightgbm as lgb
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import json
-from datetime import datetime
+
 from dataset import Data
 from sklearn.metrics import roc_auc_score
 from sklearn.svm import SVC, LinearSVC
@@ -33,70 +30,14 @@ FIG_DIR.mkdir(parents=True, exist_ok=True)
 class Gaia:
     def __init__(self, model_name, seed_list, params):
         self.DATA = Data()
+
         self.TRAINERS = {
             "SVM_Linear": self._fit_svm_linear,
             "SVM_Tanimoto": self._fit_svm_tanimoto,
             "LGBM": self._fit_lgbm,
         }
-        self.PREDICTORS = {
-            "SVM_Linear": self._predict_svm_linear,
-            "SVM_Tanimoto": self._predict_svm_tanimoto,
-            "LGBM": self._predict_lgbm,
-        }
+
         self.score = self.pipeline(model_name, seed_list, params)
-
-    # ------------------------------------------------------------------ scaffold split
-    def scaffold_split(
-        self, dataset, frac_train=0.8, frac_val=0.1, frac_test=0.1, seed: int = 0
-    ):
-        """Scaffold split facon MoleculeNet/DeepChem :
-        groupes tries par taille decroissante, chaque groupe affecte au split
-        avec le plus gros quota restant. Garantit val/test non vides meme avec
-        de tres gros scaffolds. Le seed brise les egalites de taille."""
-        assert abs(frac_train + frac_val + frac_test - 1.0) < 1e-6
-        rng = np.random.default_rng(seed)
-
-        scaffold_to_idx = {}
-        for i in range(len(dataset)):
-            scaffold_to_idx.setdefault(
-                self.DATA.murcko_scaffold_smiles(dataset[i]), []
-            ).append(i)
-        groups = [np.asarray(g, dtype=np.int64) for g in scaffold_to_idx.values()]
-
-        # ETAPE 1 : tri par taille decroissante ; le seed melange a taille egale
-        # (les familles de 1-2 molecules sont nombreuses : c'est la que le seed agit)
-        sizes = np.array([len(g) for g in groups])
-        noise = rng.random(len(groups))  # bruit uniforme, ordre fixe par seed
-        order = np.lexsort((noise, -sizes))  # taille desc, puis bruit asc
-        groups = [groups[k] for k in order]
-
-        # ETAPE 2 : remplissage par deficit maximal
-        n = len(dataset)
-        quotas = {"train": frac_train * n, "val": frac_val * n, "test": frac_test * n}
-        splits = {"train": [], "val": [], "test": []}
-
-        for group in groups:
-            # split avec le plus grand quota restant (jamais negatif => jamais vide)
-            name = max(quotas, key=lambda k: quotas[k])
-            splits[name].append(group)
-            quotas[name] -= len(group)
-
-        train = np.concatenate(splits["train"])
-        val = np.concatenate(splits["val"])
-        test = np.concatenate(splits["test"])
-
-        # garde-fous
-        assert (
-            train.dtype == np.int64 and val.dtype == np.int64 and test.dtype == np.int64
-        )
-        assert len(val) > 0 and len(test) > 0, (
-            f"val/test vide : {len(val)}/{len(test)} — augmentez frac_val/frac_test "
-            f"ou verifiez qu'aucun scaffold ne domine le dataset"
-        )
-        assert len(train) + len(val) + len(test) == n
-        assert len(np.intersect1d(train, test)) == 0
-
-        return train, val, test
 
     # --- fitters : signature UNIFORME (Xtr, ytr, G_tt, params) ---
 
@@ -146,60 +87,6 @@ class Gaia:
             models.append(fit(X[rows], ytr, G[np.ix_(rows, rows)], params))
         return models
 
-    def _predict_svm_linear(
-        self,
-        clf,
-        Xte,
-        G_te,
-    ):
-        """Marge du SVM lineaire (ranking pour l'AUC, pas besoin de proba)."""
-        return clf.decision_function(Xte)
-
-    def _predict_svm_tanimoto(self, clf, Xte, G_te):
-        """Marge du SVM Tanimoto : G_te = Gram (test masque x train masque)."""
-        return clf.decision_function(G_te)
-
-    def _predict_lgbm(self, clf, Xte, G_te):
-        """Probabilite de la classe positive LGBM (probas natives)."""
-        return clf.predict_proba(Xte)[:, 1]
-
-    def evaluate(self, model_name, models, idx_train, idx_test) -> dict:
-        """Pipeline d'evaluation unique, miroir de training().
-        Retourne {"auc_per_task": (12,), "auc_mean": float}.
-
-        Invariant cle : le masque train de chaque tache est reconstruit ici
-        par la MEME formule que dans training() — c'est ce qui garantit que
-        la Gram croisee a la largeur attendue par le modele Tanimoto.
-        """
-        if model_name not in self.PREDICTORS:
-            raise ValueError(
-                f"Modele inconnu : {model_name!r}. "
-                f"Choix valides : {list(self.PREDICTORS)}"
-            )
-
-        X, Y = self.DATA.features, self.DATA.labels
-        G = self.DATA.gram_tanimoto
-        predict = self.PREDICTORS[model_name]
-
-        aucs = []
-        for t, clf in enumerate(models):
-            # test masque (lignes de la metrique)
-            rows_te = idx_test[~np.isnan(Y[idx_test, t])]
-            yte = Y[rows_te, t].astype(int)
-
-            # garde-fou : AUC indefinie sans deux classes
-            if len(np.unique(yte)) < 2:
-                aucs.append(np.nan)
-                continue
-
-            # train masque : LA meme formule que training() (invariant de largeur)
-            rows_tr = idx_train[~np.isnan(Y[idx_train, t])]
-            G_te = G[np.ix_(rows_te, rows_tr)]  # Gram croisee test x train
-            scores = predict(clf=clf, Xte=X[rows_te], G_te=G_te)
-            aucs.append(roc_auc_score(yte, scores))
-
-        aucs = np.array(aucs)
-        return {"auc_per_task": aucs, "auc_mean": np.nanmean(aucs)}
 
     # ------------------------------------------------------------------------- pipeline
     def pipeline(self, model_name="SVM_Tanimoto", seed_list=(0, 1, 2), params=None,
@@ -218,7 +105,7 @@ class Gaia:
         val_means, test_means, test_aucs = [], [], []
         for seed in tqdm(seed_list):
             self._current_seed = seed  # pour random_state LGBM
-            train, val, test = self.scaffold_split(self.DATA.df, seed=seed)
+            train, val, test = self.DATA.scaffold_split(self.DATA.df, seed=seed)
             models = self.training(model_name, train, params)
 
             res_val = self.evaluate(model_name, models, train, val)
@@ -249,96 +136,4 @@ class Gaia:
 
         return results
 
-    # ------------------------------------------------------------------------- synthese
-    def summarize(self, results: dict, out_dir: Path = Path("results")) -> Path:
-        """Sauvegarde UNE version synthetique du run :
-        - {model}_{split}_summary.json : metriques globales + params + horodatage,
-        - {model}_{split}_per_task.csv : AUC par tache (moyenne +/- std sur seeds).
-        Un run complet = 2 fichiers, prefixes par le nom du modele et le split.
-        Retourne le chemin du JSON (la reference du run)."""
-        out_dir.mkdir(parents=True, exist_ok=True)
-        model = results["model_name"]
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-        # -- 1. perimetre : val seule, ou val + test --
-        scopes = {"val": results["val"]}
-        if "test" in results:
-            scopes["test"] = results["test"]
-
-        # -- 2. CSV par tache : une ligne par (task), colonnes val/test --
-        df = pd.DataFrame({"task": TASK_NAMES})
-        for scope, res in scopes.items():
-            if "auc_matrix" in res:  # moyenne +/- std sur seeds
-                df[f"{scope}_auc"] = np.nanmean(res["auc_matrix"], axis=0)
-                df[f"{scope}_auc_std"] = np.nanstd(res["auc_matrix"], axis=0)
-            else:  # val en pipeline light
-                df[f"{scope}_auc"] = res.get("auc_per_task", np.nan)
-                df[f"{scope}_auc_std"] = np.nan
-        csv_path = out_dir / f"{model}_{ts}_per_task.csv"
-        df.to_csv(csv_path, index=False)
-
-        # -- 3. JSON : le resume machine-lisible du run --
-        summary = {
-            "model_name": model,
-            "params": results["params"],
-            "n_seeds": results["n_seeds"],
-            "timestamp": ts,
-            "per_task_csv": csv_path.name,
-        }
-        for scope, res in scopes.items():
-            summary[scope] = {
-                "auc_mean": float(res["auc_mean"]),
-                "auc_mean_std": float(res["auc_mean_std"]),
-            }
-
-        json_path = out_dir / f"{model}_{ts}_summary.json"
-        with open(json_path, "w") as f:
-            json.dump(summary, f, indent=2)
-
-        # -- 4. lecture console compacte --
-        print(f"\n===== {model} ({results['n_seeds']} seeds) =====")
-        for scope, res in scopes.items():
-            print(f"{scope:>5} AUC : {res['auc_mean']:.4f} +/- {res['auc_mean_std']:.4f}")
-        print(f"Resume : {json_path}")
-
-        # -- 5. figure (test en priorite, sinon val) --
-        plot_scope = "test" if "test" in results else "val"
-        if "auc_matrix" in results[plot_scope]:
-            self.plot_auc_per_task(results, scope=plot_scope)
-
-        return json_path
-    # ------------------------------------------------------------------------- graphe
-
-    def plot_auc_per_task(self, results: dict, scope: str = "test",
-                          out: Path | None = None) -> "plt.Figure":
-        """Barres horizontales : AUC par tache (moyenne +/- std sur les seeds).
-        Prend le dict de resultats complet + le scope ('val' ou 'test')."""
-        res = results[scope]
-        if "auc_matrix" not in res:
-            raise ValueError(f"Pas de auc_matrix pour scope={scope!r} "
-                             f"(il faut evaluate_test=True ou plusieurs seeds).")
-
-        model_name = results["model_name"]
-        if out is None:
-            out = FIG_DIR / f"{model_name}_auc_per_task_{scope}.png"
-
-        aucs = np.nanmean(res["auc_matrix"], axis=0)
-        stds = np.nanstd(res["auc_matrix"], axis=0)
-        order = np.argsort(aucs)
-
-        fig, ax = plt.subplots(figsize=(8, 5))
-        ax.barh(np.array(TASK_NAMES)[order], aucs[order], xerr=stds[order],
-                color="#4C72B0", alpha=1)
-        ax.axvline(0.5, color="red", linestyle="--", linewidth=1, label="Hasard (0.5)")
-        ax.axvline(np.nanmean(aucs), color="orange", linestyle="--", linewidth=1,
-                   label=f"Moyenne ({np.nanmean(aucs):.3f})")
-        ax.set_xlim(0.4, 1)
-        ax.set_xlabel(f"AUC ROC ({scope}, scaffold split)")
-        ax.set_title(f"{model_name} + ECFP4 - AUC par tache ({results['n_seeds']} seeds)")
-        ax.legend()
-        fig.tight_layout()
-        fig.savefig(out, dpi=150)
-        plt.close(fig)
-        print(f"Figure sauvegardee : {out}")
-        return fig
 

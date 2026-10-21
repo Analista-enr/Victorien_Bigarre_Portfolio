@@ -1,0 +1,49 @@
+# === Système ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Environnements virtuels ===
+venv/
+.venv/
+env/
+.env
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# === Outils / qualité ===
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# === Jupyter ===
+.ipynb_checkpoints/
+
+# === IDE / éditeurs ===
+.idea/
+.vscode/
+*.swp
+
+# === Données & modèles (à adapter selon ton projet) ===
+data/
+*.csv
+*.parquet
+models/
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+
+# === Divers ===
+*.log
+.env.local
+secrets.*
