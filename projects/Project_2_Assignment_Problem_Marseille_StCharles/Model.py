@@ -19,7 +19,7 @@ class HybridSolver(TrainScheduler):
     def _neighbor(self, sol: List[int]) -> List[int]:
         """Génère un voisin aléatoire en respectant les contraintes fixes."""
         n = sol.copy()
-        move = random.choice(["swap", "move", "reverse"])
+        move = random.choice(["swap", "move"])
 
         if move == "swap":
             i, j = random.sample(range(len(n)), 2)
@@ -32,12 +32,6 @@ class HybridSolver(TrainScheduler):
             if i in self.fixed_assignments:
                 return self._neighbor(sol)
             n[i] = random.randint(1, self.nb_quais)
-
-        else:  # reverse
-            i, j = sorted(random.sample(range(len(n)), 2))
-            if any(idx in self.fixed_assignments for idx in range(i, j + 1)):
-                return self._neighbor(sol)
-            n[i : j + 1] = n[i : j + 1][::-1]
 
         return n
 
