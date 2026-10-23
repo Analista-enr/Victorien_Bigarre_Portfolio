@@ -1,4 +1,6 @@
-from typing import Dict, List
+from __future__ import annotations
+
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,111 +8,240 @@ import pandas as pd
 from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
 
+REQUIRED_COLUMNS = ("Numero", "Arrival", "Departure")
+
 
 class TrainScheduler:
     """
-    Classe de base pour la gestion des données et des fonctions universelles.
+    Données et fonctions communes pour l'affectation des trains aux quais.
+
     Contient :
-    - Le chargement des données (trains, horaires, affectations fixes).
-    - Le calcul de la matrice `overlap` (chevauchements temporels).
-    - Le calcul du score `op_score`.
-    - La visualisation `plot_gantt`.
+    - le chargement et la validation des données (trains, horaires, affectations fixes) ;
+    - la matrice `overlap` (minutes de chevauchement entre deux trains) ;
+    - le score `op_score` ;
+    - une borne de concurrence et une solution initiale gloutonne ;
+    - la visualisation `plot_gantt`.
+
+    Convention : les quais sont numérotés de 1 à `nb_quais`, les trains sont
+    indexés par leur position (0..nb_train-1) dans le DataFrame d'entrée
+    (l'ordre d'entrée est conservé).
+
+    Les horaires sont exprimés en minutes depuis minuit du premier jour
+    (`self.start`, `self.end`). Un train qui passe minuit (départ < arrivée)
+    voit son départ décalé d'un jour, et l'horizon peut donc dépasser 24 h.
     """
 
-    def __init__(self, df_excel: pd.DataFrame, nb_quai: int, penalty: int = 10):
+    def __init__(
+        self,
+        df_excel: pd.DataFrame,
+        nb_quai: int,
+        penalty: int = 10,
+        arrival_margin: int = 5,
+        departure_margin: int = 5,
+        min_dwell: int = 20,
+        overlap_offset: int = 1,
+    ):
         """
         Args:
-            df: DataFrame avec colonnes ['Numero', 'Arrival_real', 'Departure_real', 'Affectation'].
-            nb_quai: Nombre de quais disponibles (1 à nb_quai).
-            penalty: Coefficient de pénalité pour les chevauchements.
+            df_excel: DataFrame avec colonnes ['Numero', 'Arrival', 'Departure']
+                et optionnellement 'Affectation' (0 ou NaN = non fixé).
+            nb_quai: nombre de quais disponibles (1 à nb_quai).
+            penalty: coefficient de pénalité par minute de chevauchement.
+            arrival_margin: marge (min) avant l'arrivée.
+            departure_margin: marge (min) après le départ.
+            min_dwell: durée minimale (min) d'occupation avant le départ.
+            overlap_offset: ajouté à la durée de chevauchement (1 = comportement
+                historique : deux trains qui se touchent comptent 1 minute).
         """
-        self.df = self.get_arrivals_df(df_excel)
-        self.nb_quais = nb_quai
-        self.nb_train = len(self.df)
+        if nb_quai < 1:
+            raise ValueError("nb_quai doit être >= 1")
+        self.nb_quais = int(nb_quai)
         self.penalty = penalty
-        self.T = 24 * 60  # 24h en minutes
+        self.arrival_margin = arrival_margin
+        self.departure_margin = departure_margin
+        self.min_dwell = min_dwell
+        self.overlap_offset = overlap_offset
 
-        # Affectations fixes (train_index -> quai)
-        self.fixed_assignments = {
-            idx: int(row["Affectation"])
-            for idx, row in self.df.iterrows()
-            if row["Affectation"] != 0
+        self.df = self.get_arrivals_df(df_excel)
+        self.nb_train = len(self.df)
+
+        self.start, self.end = self._compute_minutes()
+
+        # Affectations fixes (index du train -> quai)
+        self.fixed_assignments: Dict[int, int] = {
+            int(i): int(q) for i, q in self.df["Affectation"].items() if q != 0
         }
 
-        # Dictionnaire des horaires (numéro_train -> {arr, dep, emp, affect})
+        # Dictionnaire des horaires (numéro_train -> {...})
         self.dico = self._get_train_schedule()
 
         # Matrice des chevauchements (pré-calculée)
         self.overlap = self._compute_overlaps()
 
-    def get_arrivals_df(self, df_excel: pd.DataFrame):
-        df = df_excel.copy()
-        for col in ["Arrival", "Departure"]:
-            df[col] = pd.to_datetime(df[col].astype(str))
+    # ------------------------------------------------------------------ #
+    # Alias de compatibilité
+    # ------------------------------------------------------------------ #
+    @property
+    def nb_quai(self) -> int:
+        return self.nb_quais
 
-        delta_20min = pd.to_timedelta("20min")
-        delta_5min = pd.to_timedelta("5min")
-        df["Arrival_real"] = np.minimum(
-            df["Arrival"] - delta_5min, df["Departure"] - delta_20min
+    # ------------------------------------------------------------------ #
+    # Chargement et validation
+    # ------------------------------------------------------------------ #
+    def get_arrivals_df(self, df_excel: pd.DataFrame) -> pd.DataFrame:
+        missing = [c for c in REQUIRED_COLUMNS if c not in df_excel.columns]
+        if missing:
+            raise ValueError(f"Colonnes manquantes : {missing}")
+
+        df = df_excel.copy().reset_index(drop=True)
+
+        for col in ("Arrival", "Departure"):
+            df[col] = pd.to_datetime(df[col].astype(str), errors="coerce")
+
+        bad = df[df[["Arrival", "Departure"]].isna().any(axis=1)]
+        if not bad.empty:
+            raise ValueError(
+                "Horaires manquants ou illisibles pour les trains : "
+                f"{bad['Numero'].tolist()}"
+            )
+
+        dup = df.loc[df["Numero"].duplicated(keep=False), "Numero"].unique()
+        if len(dup) > 0:
+            raise ValueError(f"Numéros de train dupliqués : {list(dup)}")
+
+        # Train qui passe minuit : le départ est le lendemain
+        crosses_midnight = df["Departure"] < df["Arrival"]
+        df.loc[crosses_midnight, "Departure"] += pd.Timedelta(days=1)
+
+        # Affectations fixes
+        if "Affectation" not in df.columns:
+            df["Affectation"] = 0
+        df["Affectation"] = (
+            pd.to_numeric(df["Affectation"], errors="coerce").fillna(0).astype(int)
         )
-        df["Departure_real"] = df["Departure"] + delta_5min
+        out_of_range = df[(df["Affectation"] < 0) | (df["Affectation"] > self.nb_quais)]
+        if not out_of_range.empty:
+            raise ValueError(
+                f"Affectation hors de [0, {self.nb_quais}] pour les trains : "
+                f"{out_of_range['Numero'].tolist()}"
+            )
 
-        df.drop(columns=["Arrival", "Departure"], inplace=True)
-        df["Affectation"].fillna(0)
-        df.sort_values(by=["Numero"], ascending=False).reset_index(drop=True)
-        return df
+        # Horaires réels avec marges
+        df["Arrival_real"] = np.minimum(
+            df["Arrival"] - pd.Timedelta(minutes=self.arrival_margin),
+            df["Departure"] - pd.Timedelta(minutes=self.min_dwell),
+        )
+        df["Departure_real"] = df["Departure"] + pd.Timedelta(
+            minutes=self.departure_margin
+        )
+
+        return df.drop(columns=["Arrival", "Departure"])
+
+    def _compute_minutes(self) -> Tuple[np.ndarray, np.ndarray]:
+        """Minutes depuis minuit du premier jour (toujours >= 0)."""
+        self.day0 = self.df["Arrival_real"].min().normalize()
+
+        def to_min(s: pd.Series) -> np.ndarray:
+            return (
+                ((s - self.day0).dt.total_seconds() / 60).round().astype(int).to_numpy()
+            )
+
+        return to_min(self.df["Arrival_real"]), to_min(self.df["Departure_real"])
 
     def _get_train_schedule(self) -> Dict:
-        """Retourne un dictionnaire avec les horaires et affectations de chaque train."""
+        """Dictionnaire numéro_train -> horaires et affectation."""
         dico = {}
-        for num in self.df["Numero"]:
-            train_data = {}
-            arrival = self.df.loc[self.df["Numero"] == num, "Arrival_real"].iloc[0]
-            departure = self.df.loc[self.df["Numero"] == num, "Departure_real"].iloc[0]
-            quai = self.df.loc[self.df["Numero"] == num, "Affectation"].iloc[0]
-            train_data["arr"] = [arrival.hour, arrival.minute]
-            train_data["dep"] = [departure.hour, departure.minute]
-            train_data["emp"] = self.df[self.df["Numero"] == num].index[
-                0
-            ]  # Index du train
-            train_data["affect"] = quai
-            dico[num] = train_data
+        for i, num in enumerate(self.df["Numero"]):
+            s, e = int(self.start[i]), int(self.end[i])
+            dico[num] = {
+                "arr": [(s // 60) % 24, s % 60],
+                "dep": [(e // 60) % 24, e % 60],
+                "start": s,
+                "end": e,
+                "emp": i,
+                "affect": int(self.df.at[i, "Affectation"]),
+            }
         return dico
 
-    def _compute_overlaps(self) -> List[List[int]]:
-        """
-        Calcule une matrice de chevauchements temporels entre tous les trains.
-        overlap[i][k] = nombre de minutes où les trains i et k se chevauchent.
-        """
-        overlap = [[0] * self.nb_train for _ in range(self.nb_train)]
-        for i in range(self.nb_train):
-            num_i = self.df.iloc[i]["Numero"]
-            deb_i = self.dico[num_i]["arr"][0] * 60 + self.dico[num_i]["arr"][1]
-            fin_i = self.dico[num_i]["dep"][0] * 60 + self.dico[num_i]["dep"][1]
+    # ------------------------------------------------------------------ #
+    # Chevauchements et score
+    # ------------------------------------------------------------------ #
+    def _compute_overlaps(self) -> np.ndarray:
+        s, e = self.start, self.end
+        ov = (
+            np.minimum(e[:, None], e[None, :])
+            - np.maximum(s[:, None], s[None, :])
+            + self.overlap_offset
+        )
+        ov = np.maximum(ov, 0)
+        np.fill_diagonal(ov, 0)
+        return ov
 
-            for k in range(i + 1, self.nb_train):
-                num_k = self.df.iloc[k]["Numero"]
-                deb_k = self.dico[num_k]["arr"][0] * 60 + self.dico[num_k]["arr"][1]
-                fin_k = self.dico[num_k]["dep"][0] * 60 + self.dico[num_k]["dep"][1]
-                overlap_ik = max(0, min(fin_i, fin_k) - max(deb_i, deb_k) + 1)
-                overlap[i][k] = overlap_ik
-                overlap[k][i] = overlap_ik
-        return overlap
+    def _as_solution(self, N: Sequence[int]) -> np.ndarray:
+        N = np.asarray(N).astype(int)
+        if N.shape != (self.nb_train,):
+            raise ValueError(
+                f"La solution doit avoir {self.nb_train} éléments, reçu {N.shape}"
+            )
+        return N
 
-    def op_score(self, N: List[int]) -> float:
-        """
-        Calcule le score pour une solution N.
-        Score = penalty * Σ(overlap[i][k] * (N[i] == N[k])) pour i < k.
-        """
-        s = 0
-        for i in range(self.nb_train):
-            for k in range(i + 1, self.nb_train):
-                s += self.overlap[i][k] * (N[i] == N[k])
-        return s * self.penalty
+    def op_score(self, N: Sequence[int]) -> int:
+        """Pénalité totale : penalty * minutes de chevauchement sur un même quai."""
+        N = self._as_solution(N)
+        same = N[:, None] == N[None, :]
+        return self.penalty * int((self.overlap * same).sum() // 2)
 
+    def conflicts(self, N: Sequence[int]) -> List[Tuple[int, int, int]]:
+        """Liste des (train_i, train_j, minutes) en conflit sur un même quai."""
+        N = self._as_solution(N)
+        same = (N[:, None] == N[None, :]) & (self.overlap > 0)
+        ii, jj = np.nonzero(np.triu(same, 1))
+        return [(int(i), int(j), int(self.overlap[i, j])) for i, j in zip(ii, jj)]
+
+    def check_solution(self, N: Sequence[int]) -> None:
+        """Lève une ValueError si la solution est invalide (plage, quais fixes)."""
+        N = self._as_solution(N)
+        if N.min() < 1 or N.max() > self.nb_quais:
+            raise ValueError(f"Quais attendus dans [1, {self.nb_quais}]")
+        for i, q in self.fixed_assignments.items():
+            if N[i] != q:
+                raise ValueError(f"Le train {i} devrait être sur le quai {q}")
+
+    # ------------------------------------------------------------------ #
+    # Outils d'analyse
+    # ------------------------------------------------------------------ #
+    def max_concurrency(self) -> int:
+        """
+        Nombre maximal de trains simultanément présents.
+        Si <= nb_quais (et sans affectations fixes contraignantes), un score
+        de 0 est atteignable.
+        """
+        thr = 1 - self.overlap_offset
+        counts = [
+            int(((self.start <= s) & (self.end - s >= thr)).sum()) for s in self.start
+        ]
+        return max(counts) if counts else 0
+
+    def greedy_init(self) -> np.ndarray:
+        """Solution gloutonne : trains triés par arrivée, quai le moins conflictuel."""
+        sol = np.zeros(self.nb_train, dtype=int)
+        for i, q in self.fixed_assignments.items():
+            sol[i] = q
+        for i in np.argsort(self.start, kind="stable"):
+            if i in self.fixed_assignments:
+                continue
+            cost = [
+                self.overlap[i][sol == q].sum() for q in range(1, self.nb_quais + 1)
+            ]
+            sol[i] = int(np.argmin(cost)) + 1
+        return sol
+
+    # ------------------------------------------------------------------ #
+    # Visualisation
+    # ------------------------------------------------------------------ #
     def plot_gantt(
         self,
-        solution: List[int] = None,
+        solution: Optional[Sequence[int]] = None,
         figsize: tuple = (16, 8),
         color_palette: str = "Set3",
         show_legend: bool = False,
@@ -119,66 +250,60 @@ class TrainScheduler:
         bar_height: float = 0.6,
         alpha: float = 0.85,
         show_hour_lines: bool = True,
-        title: str = None,
+        highlight_conflicts: bool = True,
+        title: Optional[str] = None,
+        show: bool = False,
     ):
         """
-        Affiche un diagramme de Gantt **esthétique et professionnel** des affectations des trains aux quais.
+        Diagramme de Gantt des affectations trains -> quais.
 
         Args:
-            solution: Liste d'affectations (train_index -> quai). Si None, utilise les affectations du DataFrame.
-            figsize: Taille de la figure (largeur, hauteur). Défaut: (16, 8).
-            color_palette: Palette de couleurs matplotlib ('Set3', 'tab20', 'viridis', 'pastel1').
-            show_legend: Si True, affiche une légende avec les numéros de train.
-            train_text_size: Taille du texte des numéros de train.
-            hour_text_size: Taille du texte des repères horaires.
-            bar_height: Hauteur des barres (0.5-0.8 recommandé).
-            alpha: Transparence des barres (0.7-0.9 recommandé).
-            show_hour_lines: Si True, affiche les lignes horaires.
-            title: Titre personnalisé (défaut: titre générique).
+            solution: affectations (index du train -> quai). Si None, utilise
+                les affectations du DataFrame.
+            highlight_conflicts: entoure en rouge les trains en conflit.
+            show: appelle plt.show() si True.
+
+        Returns:
+            (fig, ax)
         """
+        if solution is None:
+            sol = self.df["Affectation"].to_numpy().astype(int)
+        else:
+            sol = self._as_solution(solution)
 
-        # --- Configuration initiale ---
-        plt.figure(figsize=figsize)
-        plt.style.use("ggplot")  # Style moderne et épuré
-
-        # --- Palette de couleurs ---
-        cmap = plt.get_cmap(color_palette)
-        colors = [cmap(i) for i in np.linspace(0, 1, len(self.df["Numero"]))]
-        color_map = {num: colors[i] for i, num in enumerate(self.df["Numero"])}
-
-        # --- Tracer les barres pour chaque train ---
-        for num in self.df["Numero"]:
-            train_data = self.dico[num]
-            start = train_data["arr"][0] * 60 + train_data["arr"][1]
-            end = train_data["dep"][0] * 60 + train_data["dep"][1]
-            duration = end - start
-
-            # Déterminer le quai
-            quai = (
-                solution[train_data["emp"]]
-                if solution is not None
-                else train_data["affect"]
+        conflict_mask = np.zeros(self.nb_train, dtype=bool)
+        if highlight_conflicts and (sol > 0).any():
+            same = (
+                (sol[:, None] == sol[None, :]) & (self.overlap > 0) & (sol[:, None] > 0)
             )
+            conflict_mask = same.any(axis=1)
 
-            if (
-                quai != 0 and duration > 0
-            ):  # Ignorer les trains non affectés ou de durée nulle
-                # Barre avec bordure noire et extrémités arrondies
-                plt.barh(
+        horizon = max(24 * 60, int(np.ceil(self.end.max() / 120) * 120))
+
+        with plt.style.context("ggplot"):
+            fig, ax = plt.subplots(figsize=figsize)
+
+            cmap = plt.get_cmap(color_palette)
+            colors = [cmap(c) for c in np.linspace(0, 1, max(self.nb_train, 1))]
+
+            for i, num in enumerate(self.df["Numero"]):
+                quai = int(sol[i])
+                duration = int(self.end[i] - self.start[i])
+                if quai == 0 or duration <= 0:
+                    continue
+                bad = bool(conflict_mask[i])
+                ax.barh(
                     quai,
-                    left=start,
+                    left=self.start[i],
                     width=duration,
                     height=bar_height,
-                    color=color_map[num],
-                    edgecolor="#2c3e50",
-                    linewidth=0.8,
+                    color=colors[i],
+                    edgecolor="#c0392b" if bad else "#2c3e50",
+                    linewidth=2.0 if bad else 0.8,
                     alpha=alpha,
-                    capstyle="round",  # Extrémités arrondies
                 )
-
-                # Texte du numéro de train (centré, avec fond semi-transparent)
-                plt.text(
-                    start + duration / 2,
+                ax.text(
+                    self.start[i] + duration / 2,
                     quai,
                     str(num),
                     ha="center",
@@ -195,114 +320,59 @@ class TrainScheduler:
                     ),
                 )
 
-        # --- Configuration des axes ---
-        plt.xlim(0, 24 * 60)
-        plt.ylim(0, self.nb_quais + 1.5)  # Espace pour les labels
+            ax.set_xlim(0, horizon)
+            ax.set_ylim(0.3, self.nb_quais + 0.7)
+            ax.set_yticks(range(1, self.nb_quais + 1))
+            ax.set_yticklabels(
+                [f"Quai {q}" for q in range(1, self.nb_quais + 1)],
+                fontsize=11,
+                fontweight="bold",
+                color="#2c3e50",
+            )
+            ax.set_ylabel("Quai", fontsize=13, fontweight="bold", color="#2c3e50")
 
-        # Axe Y (quais) - Style amélioré
-        plt.yticks(
-            range(1, self.nb_quais + 1),
-            [f"Quai {i}" for i in range(1, self.nb_quais + 1)],
-            fontsize=11,
-            fontweight="bold",
-            color="#2c3e50",
-        )
-        plt.ylabel("Quai", fontsize=13, fontweight="bold", labelpad=15, color="#2c3e50")
+            def fmt(x, pos):
+                h = int(x // 60)
+                label = f"{h % 24}h"
+                return label + (f" (+{h // 24}j)" if h >= 24 else "")
 
-        # Axe X (temps) - Format heures:minutes
-        def minutes_to_hours(x, pos):
-            hours = int(x // 60)
-            minutes = int(x % 60)
-            return f"{hours}h{minutes:02d}" if minutes else f"{hours}h"
+            ax.set_xticks(range(0, horizon + 1, 120))
+            ax.xaxis.set_major_formatter(FuncFormatter(fmt))
+            ax.tick_params(axis="x", labelsize=hour_text_size)
+            ax.set_xlabel("Heure", fontsize=13, fontweight="bold", color="#2c3e50")
 
-        plt.gca().xaxis.set_major_formatter(FuncFormatter(minutes_to_hours))
-        plt.xticks(
-            range(0, 25 * 60, 2 * 60),  # Toutes les 2 heures
-            fontsize=10,
-            fontweight="bold",
-            color="#2c3e50",
-        )
-        plt.xlabel(
-            "Heure", fontsize=13, fontweight="bold", labelpad=15, color="#2c3e50"
-        )
+            if show_hour_lines:
+                for x in range(0, horizon + 1, 120):
+                    ax.axvline(
+                        x, color="#34495e", linestyle="--", alpha=0.4, linewidth=1
+                    )
 
-        # --- Titre personnalisable ---
-        if title is None:
-            title = "🚄 Diagramme de Gantt - Affectation Optimisée des Trains aux Quais"
-        plt.title(title, fontsize=16, fontweight="bold", pad=20, color="#2c3e50")
+            ax.set_title(
+                title or "Diagramme de Gantt - Affectation des trains aux quais",
+                fontsize=16,
+                fontweight="bold",
+                pad=20,
+                color="#2c3e50",
+            )
 
-        # --- Lignes horaires (optionnelles) ---
-        if show_hour_lines:
-            for hour in range(0, 25, 2):
-                plt.axvline(
-                    x=hour * 60, color="#34495e", linestyle="--", alpha=0.6, linewidth=1
-                )
-                plt.text(
-                    hour * 60,
-                    self.nb_quais + 1.2,
-                    f"{hour}h",
-                    ha="center",
-                    va="bottom",
-                    fontsize=hour_text_size,
-                    fontweight="bold",
-                    color="#34495e",
-                    bbox=dict(
-                        facecolor="white",
-                        alpha=0.8,
-                        edgecolor="none",
-                        boxstyle="round,pad=0.3",
-                    ),
-                )
-
-        # --- Grille discrète ---
-        plt.grid(axis="x", linestyle=":", alpha=0.3, color="#ecf0f1", linewidth=0.8)
-
-        # --- Légende (optionnelle) ---
-        if show_legend:
-            if len(self.df["Numero"]) <= 15:
-                legend_elements = [
+            if show_legend and self.nb_train <= 15:
+                handles = [
                     Patch(
-                        facecolor=color_map[num],
+                        facecolor=colors[i],
                         edgecolor="#2c3e50",
                         label=f"Train {num}",
                         alpha=alpha,
-                        linewidth=0.5,
                     )
-                    for num in self.df["Numero"]
+                    for i, num in enumerate(self.df["Numero"])
                 ]
-                plt.legend(
-                    handles=legend_elements,
-                    loc="upper right",
-                    bbox_to_anchor=(1.01, 1),
-                    fontsize=9,
-                    title="Légende des Trains",
-                    title_fontsize=11,
-                    framealpha=0.9,
-                    edgecolor="#2c3e50",
-                )
-            else:
-                plt.text(
-                    0.99,
-                    0.98,
-                    f"Légende: {len(self.df['Numero'])} trains",
-                    transform=plt.gca().transAxes,
-                    ha="right",
-                    va="top",
-                    fontsize=9,
-                    fontstyle="italic",
-                    color="#7f8c8d",
-                    bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+                ax.legend(
+                    handles=handles, loc="upper right", fontsize=9, title="Trains"
                 )
 
-        # --- Ajustements finaux pour un rendu pro ---
-        ax = plt.gca()
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        ax.spines["left"].set_linewidth(1.2)
-        ax.spines["bottom"].set_linewidth(1.2)
-        ax.spines["left"].set_color("#2c3e50")
-        ax.spines["bottom"].set_color("#2c3e50")
-        ax.tick_params(axis="both", which="major", labelsize=10)
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            fig.tight_layout()
 
-        plt.tight_layout()
-        plt.show()
+        if show:
+            plt.show()
+        return fig, ax
