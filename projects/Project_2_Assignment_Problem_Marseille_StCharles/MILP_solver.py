@@ -6,7 +6,6 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 import pulp as lp
-
 from data_process import TrainScheduler
 
 
@@ -60,8 +59,10 @@ class Medee:
         prob = lp.LpProblem("train_platform_assignment", lp.LpMinimize)
 
         # Matrice de variables binaires : X[j][i] = 1 <=> train j sur le quai i+1
-        X = [[lp.LpVariable(f"X_{j}_{i}", cat="Binary") for i in range(nq)]
-             for j in range(n)]
+        X = [
+            [lp.LpVariable(f"X_{j}_{i}", cat="Binary") for i in range(nq)]
+            for j in range(n)
+        ]
 
         prob += 0  # problème de faisabilité : pas d'objectif
 

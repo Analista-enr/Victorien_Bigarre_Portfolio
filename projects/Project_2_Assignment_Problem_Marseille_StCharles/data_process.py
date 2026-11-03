@@ -5,8 +5,9 @@ from typing import Dict, List, Optional, Sequence, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.patches import Patch
-from matplotlib.ticker import FuncFormatter
+from matplotlib.colors import to_rgb
+from matplotlib.patches import FancyBboxPatch, Patch
+from matplotlib.ticker import FuncFormatter, MultipleLocator
 
 REQUIRED_COLUMNS = ("Numero", "Arrival", "Departure")
 
@@ -239,18 +240,21 @@ class TrainScheduler:
     # ------------------------------------------------------------------ #
     # Visualisation
     # ------------------------------------------------------------------ #
+
     def plot_gantt(
         self,
         solution: Optional[Sequence[int]] = None,
         figsize: tuple = (16, 8),
-        color_palette: str = "Set3",
+        color_palette: str = "tab20",
         show_legend: bool = False,
         train_text_size: int = 10,
         hour_text_size: int = 11,
-        bar_height: float = 0.6,
-        alpha: float = 0.85,
+        bar_height: float = 0.62,
+        alpha: float = 0.95,
         show_hour_lines: bool = True,
         highlight_conflicts: bool = True,
+        show_night: bool = True,
+        show_times: bool = False,
         title: Optional[str] = None,
         show: bool = False,
     ):
@@ -260,7 +264,9 @@ class TrainScheduler:
         Args:
             solution: affectations (index du train -> quai). Si None, utilise
                 les affectations du DataFrame.
-            highlight_conflicts: entoure en rouge les trains en conflit.
+            highlight_conflicts: bordure rouge + hachures sur les trains en conflit.
+            show_night: grise les plages de nuit (22h-6h).
+            show_times: affiche l'heure d'arrivée / départ sous chaque barre.
             show: appelle plt.show() si True.
 
         Returns:
@@ -271,6 +277,7 @@ class TrainScheduler:
         else:
             sol = self._as_solution(solution)
 
+        # --- Détection des conflits ------------------------------------
         conflict_mask = np.zeros(self.nb_train, dtype=bool)
         if highlight_conflicts and (sol > 0).any():
             same = (
@@ -280,98 +287,239 @@ class TrainScheduler:
 
         horizon = max(24 * 60, int(np.ceil(self.end.max() / 120) * 120))
 
-        with plt.style.context("ggplot"):
-            fig, ax = plt.subplots(figsize=figsize)
+        # --- Palette ----------------------------------------------------
+        cmap = plt.get_cmap(color_palette)
+        if hasattr(cmap, "colors") and len(cmap.colors) <= 30:  # palette discrète
+            colors = [cmap(i % cmap.N) for i in range(max(self.nb_train, 1))]
+        else:  # palette continue
+            colors = [cmap(c) for c in np.linspace(0.05, 0.95, max(self.nb_train, 1))]
 
-            cmap = plt.get_cmap(color_palette)
-            colors = [cmap(c) for c in np.linspace(0, 1, max(self.nb_train, 1))]
+        def text_color(rgba):
+            r, g, b = to_rgb(rgba)
+            lum = 0.299 * r + 0.587 * g + 0.114 * b
+            return "#1f2933" if lum > 0.6 else "white"
 
-            for i, num in enumerate(self.df["Numero"]):
-                quai = int(sol[i])
-                duration = int(self.end[i] - self.start[i])
-                if quai == 0 or duration <= 0:
-                    continue
-                bad = bool(conflict_mask[i])
-                ax.barh(
-                    quai,
-                    left=self.start[i],
-                    width=duration,
-                    height=bar_height,
-                    color=colors[i],
-                    edgecolor="#c0392b" if bad else "#2c3e50",
-                    linewidth=2.0 if bad else 0.8,
+        # --- Couleurs de thème -----------------------------------------
+        BG = "#ffffff"
+        INK = "#1f2933"
+        MUTED = "#6b7785"
+        GRID = "#d9dee4"
+        BAND = "#f5f7fa"
+        NIGHT = "#e8ecf2"
+        BAD = "#d64545"
+
+        fig, ax = plt.subplots(figsize=figsize, facecolor=BG)
+        ax.set_facecolor(BG)
+
+        # --- Fond : bandes de quais + nuit ------------------------------
+        for q in range(1, self.nb_quais + 1):
+            if q % 2 == 0:
+                ax.axhspan(q - 0.5, q + 0.5, color=BAND, zorder=0, lw=0)
+
+        if show_night:
+            for d in range(int(np.ceil(horizon / 1440))):
+                ax.axvspan(
+                    d * 1440, d * 1440 + 360, color=NIGHT, alpha=0.6, zorder=0.5, lw=0
+                )
+                ax.axvspan(
+                    d * 1440 + 1320,
+                    min((d + 1) * 1440, horizon),
+                    color=NIGHT,
+                    alpha=0.6,
+                    zorder=0.5,
+                    lw=0,
+                )
+
+        # --- Grille -----------------------------------------------------
+        if show_hour_lines:
+            ax.xaxis.set_minor_locator(MultipleLocator(60))
+            ax.grid(axis="x", which="major", color=GRID, linewidth=1.0, zorder=1)
+            ax.grid(
+                axis="x", which="minor", color=GRID, linewidth=0.5, alpha=0.5, zorder=1
+            )
+        ax.set_axisbelow(True)
+
+        # --- Géométrie pour des coins arrondis homogènes ----------------
+        n_rows = self.nb_quais + 0.4
+        aspect = (n_rows / figsize[1]) / (horizon / figsize[0])
+        min_per_inch = horizon / (figsize[0] * 0.85)
+
+        # --- Barres -----------------------------------------------------
+        for i, num in enumerate(self.df["Numero"]):
+            quai = int(sol[i])
+            start = float(self.start[i])
+            duration = float(self.end[i] - self.start[i])
+            if quai == 0 or duration <= 0:
+                continue
+
+            bad = bool(conflict_mask[i])
+            radius = min(0.07 * min_per_inch, duration / 2.5)
+
+            # ombre portée légère
+            ax.add_patch(
+                FancyBboxPatch(
+                    (start + horizon * 0.0012, quai - bar_height / 2 - 0.025),
+                    duration,
+                    bar_height,
+                    boxstyle=f"round,pad=0,rounding_size={radius}",
+                    mutation_aspect=aspect,
+                    facecolor="black",
+                    edgecolor="none",
+                    alpha=0.10,
+                    zorder=2,
+                )
+            )
+            # barre principale
+            ax.add_patch(
+                FancyBboxPatch(
+                    (start, quai - bar_height / 2),
+                    duration,
+                    bar_height,
+                    boxstyle=f"round,pad=0,rounding_size={radius}",
+                    mutation_aspect=aspect,
+                    facecolor=colors[i],
+                    edgecolor=BAD if bad else "white",
+                    linewidth=2.4 if bad else 1.2,
                     alpha=alpha,
+                    hatch="////" if bad else None,
+                    zorder=3,
                 )
+            )
+
+            # numéro du train : on réduit la police si la barre est étroite
+            fs = train_text_size
+            needed_min = (
+                len(str(num)) * 0.62 * fs / 72 * min_per_inch + 0.1 * min_per_inch
+            )
+            while needed_min > duration and fs > 6:
+                fs -= 1
+                needed_min = (
+                    len(str(num)) * 0.62 * fs / 72 * min_per_inch + 0.1 * min_per_inch
+                )
+
+            ax.text(
+                start + duration / 2,
+                quai,
+                str(num),
+                ha="center",
+                va="center",
+                color=text_color(colors[i]),
+                fontsize=fs,
+                fontweight="bold",
+                zorder=4,
+                clip_on=True,
+            )
+
+            if show_times:
+
+                def hhmm(m):
+                    m = int(m)
+                    return f"{(m // 60) % 24:02d}:{m % 60:02d}"
+
                 ax.text(
-                    self.start[i] + duration / 2,
-                    quai,
-                    str(num),
+                    start + duration / 2,
+                    quai - bar_height / 2 - 0.04,
+                    f"{hhmm(self.start[i])}–{hhmm(self.end[i])}",
                     ha="center",
-                    va="center",
-                    color="white",
-                    fontsize=train_text_size,
-                    fontweight="bold",
-                    bbox=dict(
-                        facecolor="black",
-                        alpha=0.7,
-                        edgecolor="none",
-                        boxstyle="round,pad=0.3",
-                        lw=0,
-                    ),
+                    va="top",
+                    fontsize=7,
+                    color=MUTED,
+                    zorder=4,
                 )
 
-            ax.set_xlim(0, horizon)
-            ax.set_ylim(0.3, self.nb_quais + 0.7)
-            ax.set_yticks(range(1, self.nb_quais + 1))
-            ax.set_yticklabels(
-                [f"Quai {q}" for q in range(1, self.nb_quais + 1)],
-                fontsize=11,
-                fontweight="bold",
-                color="#2c3e50",
-            )
-            ax.set_ylabel("Quai", fontsize=13, fontweight="bold", color="#2c3e50")
+        # --- Axes -------------------------------------------------------
+        ax.set_xlim(0, horizon)
+        ax.set_ylim(self.nb_quais + 0.5, 0.5)  # quai 1 en haut
+        ax.set_yticks(range(1, self.nb_quais + 1))
+        ax.set_yticklabels(
+            [f"voie {q}" for q in range(1, self.nb_quais + 1)],
+            fontsize=11,
+            fontweight="bold",
+            color=INK,
+        )
+        ax.tick_params(axis="y", length=0, pad=10)
 
-            def fmt(x, pos):
-                h = int(x // 60)
-                label = f"{h % 24}h"
-                return label + (f" (+{h // 24}j)" if h >= 24 else "")
+        def fmt(x, pos):
+            h = int(x // 60)
+            label = f"{h % 24:02d}h"
+            return label + (f"\n+{h // 24}j" if h >= 24 and h % 24 == 0 else "")
 
-            ax.set_xticks(range(0, horizon + 1, 120))
-            ax.xaxis.set_major_formatter(FuncFormatter(fmt))
-            ax.tick_params(axis="x", labelsize=hour_text_size)
-            ax.set_xlabel("Heure", fontsize=13, fontweight="bold", color="#2c3e50")
+        ax.set_xticks(range(0, horizon + 1, 120))
+        ax.xaxis.set_major_formatter(FuncFormatter(fmt))
+        ax.tick_params(
+            axis="x",
+            which="major",
+            labelsize=hour_text_size,
+            colors=MUTED,
+            length=4,
+            color=GRID,
+        )
+        ax.tick_params(axis="x", which="minor", length=2, color=GRID)
+        ax.xaxis.set_ticks_position("bottom")
 
-            if show_hour_lines:
-                for x in range(0, horizon + 1, 120):
-                    ax.axvline(
-                        x, color="#34495e", linestyle="--", alpha=0.4, linewidth=1
-                    )
+        for side in ("top", "right", "left"):
+            ax.spines[side].set_visible(False)
+        ax.spines["bottom"].set_color(GRID)
 
-            ax.set_title(
-                title or "Diagramme de Gantt - Affectation des trains aux quais",
-                fontsize=16,
-                fontweight="bold",
-                pad=20,
-                color="#2c3e50",
-            )
+        # --- Titre + sous-titre ----------------------------------------
+        n_placed = int((sol > 0).sum())
+        n_conf = int(conflict_mask.sum())
+        subtitle = (
+            f"{n_placed}/{self.nb_train} trains affectés  ·  {self.nb_quais} voies"
+        )
+        subtitle += f"  ·  {n_conf} en conflit" if n_conf else "  ·  aucun conflit ✓"
 
-            if show_legend and self.nb_train <= 15:
-                handles = [
-                    Patch(
-                        facecolor=colors[i],
-                        edgecolor="#2c3e50",
-                        label=f"Train {num}",
-                        alpha=alpha,
-                    )
-                    for i, num in enumerate(self.df["Numero"])
-                ]
-                ax.legend(
-                    handles=handles, loc="upper right", fontsize=9, title="Trains"
+        fig.text(
+            0.015,
+            0.975,
+            title or "Affectation des trains aux voies",
+            fontsize=18,
+            fontweight="bold",
+            color=INK,
+            ha="left",
+            va="top",
+        )
+        fig.text(
+            0.015,
+            0.93,
+            subtitle,
+            fontsize=11,
+            color=BAD if n_conf else MUTED,
+            ha="left",
+            va="top",
+        )
+
+        # --- Légende ----------------------------------------------------
+        handles = []
+        if show_legend and self.nb_train <= 15:
+            handles += [
+                Patch(facecolor=colors[i], edgecolor="white", label=f"Train {num}")
+                for i, num in enumerate(self.df["Numero"])
+            ]
+        if n_conf:
+            handles.append(
+                Patch(
+                    facecolor="white",
+                    edgecolor=BAD,
+                    hatch="////",
+                    linewidth=1.5,
+                    label="Conflit",
                 )
+            )
+        if show_night:
+            handles.append(Patch(facecolor=NIGHT, label="Nuit (22h–6h)"))
+        if handles:
+            ax.legend(
+                handles=handles,
+                loc="upper center",
+                bbox_to_anchor=(0.5, -0.07),
+                ncol=min(len(handles), 8),
+                frameon=False,
+                fontsize=9,
+                labelcolor=INK,
+            )
 
-            ax.spines["top"].set_visible(False)
-            ax.spines["right"].set_visible(False)
-            fig.tight_layout()
+        fig.tight_layout(rect=(0, 0, 1, 0.91))
 
         if show:
             plt.show()

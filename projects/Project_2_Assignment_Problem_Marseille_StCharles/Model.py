@@ -5,7 +5,6 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-
 from data_process import TrainScheduler
 
 
@@ -48,6 +47,8 @@ class HybridSolver(TrainScheduler):
 
         self.solution: Optional[List[int]] = None
         self.score: Optional[int] = None
+
+        self.greedy_optimal = self.greedy_init()
 
     # ------------------------------------------------------------------ #
     # Utilitaires
@@ -121,7 +122,7 @@ class HybridSolver(TrainScheduler):
         v_max = max(self.nb_quais / 2, 1.0)
 
         positions = np.array([self._random_solution() for _ in range(n_particles)])
-        positions[0] = self.greedy_init()
+        # positions[0] = self.greedy_init()
         velocities = self.rng.uniform(-v_max, v_max, (n_particles, n))
         scores = self._score_batch(positions)
 
