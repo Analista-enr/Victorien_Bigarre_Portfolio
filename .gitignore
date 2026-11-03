@@ -8,6 +8,12 @@ venv/
 .venv/
 env/
 .env
+data/
+__pycache__/
+*.pyc
+results/figures/
+*.pt
+*.ckpt
 
 # === Python ===
 __pycache__/
@@ -47,3 +53,4 @@ checkpoints/
 *.log
 .env.local
 secrets.*
+.idea/
