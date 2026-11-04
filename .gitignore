@@ -36,6 +36,8 @@ htmlcov/
 # === Données & modèles (à adapter selon ton projet) ===
 data/
 *.csv
+*.png
+*.json
 *.parquet
 models/
 *.pt

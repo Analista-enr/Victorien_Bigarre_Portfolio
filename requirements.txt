@@ -1,0 +1,30 @@
+# ============================================================
+# Project 4 - GNN Biotechnologie
+# Python 3.10 ou 3.11 requis (PyG + RDKit supportees)
+# Installation : voir README (torch d'abord, le reste ensuite)
+# ============================================================
+
+# --- noyau scientifique ---
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+scikit-learn>=1.3
+matplotlib>=3.7
+tqdm>=4.65
+
+# --- chimie ---
+rdkit>=2023.09            # RDKit via pip (plus besoin de conda depuis 2022)
+
+# --- baselines ML ---
+lightgbm>=4.0
+
+# --- optimisation d'hyperparametres ---
+optuna>=3.4
+
+# --- deep learning / graphes ---
+# ATTENTION : torch doit etre installe AVANT torch-geometric,
+# sinon pip peut tirer un torch CPU incompatible avec votre machine.
+# Voir la section "Installation" du README pour la commande CUDA.
+torch>=2.2
+torch-geometric>=2.5
+tensorboard>=2.15          # optionnel : suivi GAT (tensorboard=True)
