@@ -53,7 +53,7 @@ class GraphSAGE(torch.nn.Module):
     - pooling mean || add || max, tete MLP partagee.
     """
 
-    def __init__(self, hidden: int = 128, n_layers: int = 3, n_tasks: int = N_TASKS,
+    def __init__(self, hidden: int = 256, n_layers: int = 3, n_tasks: int = N_TASKS,
                  dropout: float = 0.2, aggr: str = "mean", use_edge_attr: bool = True):
         super().__init__()
         self.dropout = dropout
